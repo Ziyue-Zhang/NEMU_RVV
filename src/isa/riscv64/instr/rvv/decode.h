@@ -27,7 +27,7 @@ static inline def_DHelper(vsetvl) {
   if (s->isa.instr.v_opv2.v_bigbit) {
     print_Dop(id_src2->str, OP_STR_SIZE, "%ld", id_src2->val);
   } else {
-    print_Dop(id_src2->str, OP_STR_SIZE, "%ld", s->isa.instr.v_opv2.v_zimm);
+    print_Dop(id_src2->str, OP_STR_SIZE, "%d", s->isa.instr.v_opv2.v_zimm);
   }
   
 }

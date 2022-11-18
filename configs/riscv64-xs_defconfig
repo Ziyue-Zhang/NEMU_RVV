@@ -17,7 +17,7 @@ CONFIG_CLINT_MMIO=0x38000000
 # CONFIG_MULTICORE_DIFF is not set
 CONFIG_RVB=y
 CONFIG_RVK=y
-# CONFIG_RVV_010 is not set
+CONFIG_RVV_010=y
 CONFIG_RV_SVINVAL=y
 # end of ISA-dependent Options for riscv64
 
@@ -46,7 +46,7 @@ CONFIG_CC_LTO=y
 #
 # Testing and Debugging
 #
-# CONFIG_DEBUG is not set
+CONFIG_DEBUG=y
 # CONFIG_DIFFTEST is not set
 CONFIG_DIFFTEST_REF_PATH="none"
 CONFIG_DIFFTEST_REF_NAME="none"
