@@ -23,13 +23,24 @@ static inline def_DHelper(OP_V) { // 10_101, same to R
 }
 
 static inline def_DHelper(vsetvl) {
-  rtl_li(s, &id_src2->val, s->isa.instr.v_opv2.v_bigbit ? id_src2->val : s->isa.instr.v_opv2.v_zimm);
-  if (s->isa.instr.v_opv2.v_bigbit) {
-    print_Dop(id_src2->str, OP_STR_SIZE, "%ld", id_src2->val);
-  } else {
-    print_Dop(id_src2->str, OP_STR_SIZE, "%d", s->isa.instr.v_opv2.v_zimm);
+  uint8_t op = s->isa.instr.v_opv4.v_bigbit;
+  switch (op){
+    case 0b00:
+    case 0b01:
+        rtl_li(s, &id_src2->val, s->isa.instr.v_opv2.v_zimm);
+        print_Dop(id_src2->str, OP_STR_SIZE, "%d", s->isa.instr.v_opv2.v_zimm);
+        break;
+    case 0b10:
+        rtl_lr(s, &id_src2->val, id_src2->reg, 4);
+        print_Dop(id_src2->str, OP_STR_SIZE, "%ld", id_src2->val);
+        break;
+    case 0b11:
+        rtl_li(s, &id_src1->val, s->isa.instr.v_opv4.v_simm5);
+        rtl_li(s, &id_src2->val, s->isa.instr.v_opv4.v_zimm);
+        print_Dop(id_src1->str, OP_STR_SIZE, "%d", s->isa.instr.v_opv4.v_simm5);
+        print_Dop(id_src2->str, OP_STR_SIZE, "%d", s->isa.instr.v_opv4.v_zimm);
+        break;
   }
-  
 }
 
 //vector
@@ -148,12 +159,16 @@ def_THelper(vopf) {
 }
 
 def_THelper(vsetvl_dispatch) {
-  def_INSTR_TAB("??????? ????? ????? ??? ????? ????? ??", vsetvl);
+  def_INSTR_TAB("0?????? ????? ????? ??? ????? 1010111", vsetvli);
+  def_INSTR_TAB("11????? ????? ????? ??? ????? 1010111", vsetivli);
+  def_INSTR_TAB("1000000 ????? ????? ??? ????? 1010111", vsetvl);
   return EXEC_ID_inv;
 }
 
 // All RVV instructions decode start from here
 def_THelper(OP_V) { // 10_101
+  uint64_t pc = cpu.pc;
+  printf("%016lx\n", pc);
   if (!vp_enable()) {
     return EXEC_ID_inv;
   }

@@ -72,6 +72,7 @@ void longjmp_raise_intr(uint32_t foo);
 #define SIGNED       1
 
 void vcsr_write(uint32_t addr,  rtlreg_t *src);
+void vcsr_read(uint32_t addr, rtlreg_t *dest);
 
 #endif //__RISCV64_VREG_H__
 

@@ -29,22 +29,28 @@ const char * vregsl[] = {
 };
 
 
-rtlreg_t check_vsetvl(rtlreg_t vtype_req, rtlreg_t vl_req, bool max_req) {
+rtlreg_t check_vsetvl(rtlreg_t vtype_req, rtlreg_t vl_req, int mode) {
+  rtlreg_t old_vl;
+  vcsr_read(IDXVL, &old_vl);
   vtype_t vt = (vtype_t )vtype_req;
-  rtlreg_t vl_group = ((VLEN >> 3) >> vt.vsew) << vt.vlmul;
-  if(max_req == true) {
-    return vl_group;
-  }else if(vt.vsew > 3) { //check if max-len supported
-    return (uint64_t)-1; //return 0 means error, including vl_req is 0, for vl_req should not be 0.
-  }else 
-    return vl_req <= vl_group ? vl_req : vl_group;
-  // if(vl_group >= vl_req) {
-  //   return vl_req;
-  // } else if(vl_req >= 2 * vl_group) {
-  //   return vl_group;
-  // } else {
-  //   return vl_req / 2 + 1;
-  // }
+  rtlreg_t VLMAX = VLEN >> (3 + vt.vsew - vt.vlmul);
+
+  if (mode == 1) {
+    return VLMAX;
+  } else if (mode == 2) {
+    return old_vl;
+  } else {
+    if (vt.vsew > 3) { //check if max-len supported
+      return (uint64_t)-1; //return 0 means error, including vl_req is 0, for vl_req should not be 0.
+    }
+    if (vl_req < VLMAX) {
+        return vl_req;
+    } else if (vl_req < 2 *VLMAX) {
+        return vl_req / 2 + 1;
+    } else {
+        return VLMAX;
+    }
+  }
 }
 
 rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul) {

@@ -83,7 +83,7 @@
   f(vwmul) f(vwmaccu) f(vwnmacc) f(vwmaccsu) \
   f(vwmaccus) f(vlduu) f(vldsu) f(vldxu) \
   f(vldus) f(vldss) f(vldxs) f(vstu) \
-  f(vsts) f(vstx) f(vstxu) f(vsetvl) \
+  f(vsts) f(vstx) f(vstxu) f(vsetvl) f(vsetvli) f(vsetivli) \
   f(vlduu_mmu) f(vldsu_mmu) f(vldxu_mmu) \
   f(vldus_mmu) f(vldss_mmu) f(vldxs_mmu) f(vstu_mmu) \
   f(vsts_mmu) f(vstx_mmu) f(vstxu_mmu) f(vslideup) f(vslidedown)

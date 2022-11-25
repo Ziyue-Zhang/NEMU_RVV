@@ -189,6 +189,7 @@ static inline word_t csr_read(word_t *src) {
   else if (is_read(mtvec))  { return mtvec->val & ~(0x2UL); }
   else if (is_read(stvec))  { return stvec->val & ~(0x2UL); }
   else if (is_read(sip))    { difftest_skip_ref(); return mip->val & SIP_MASK; }
+  else if (is_read(vcsr))   { mstatus->vs = 3; return (vxrm->val & 0x3) << 1 | (vxsat->val & 0x1); }
   else if (is_read(fcsr))   {
 #ifdef CONFIG_FPU_NONE
     longjmp_exception(EX_II);
@@ -224,6 +225,10 @@ void vcsr_write(uint32_t addr,  rtlreg_t *src) {
   word_t *dest = csr_decode(addr);
   *dest = *src;
 }
+void vcsr_read(uint32_t addr,  rtlreg_t *dest) {
+  word_t *src = csr_decode(addr);
+  *dest = *src;
+}
 #endif // CONFIG_RVV_010
 
 void disable_time_intr() {
@@ -242,6 +247,7 @@ static inline void csr_write(word_t *dest, word_t src) {
   else if (is_write(stvec)) { *dest = src & ~(0x2UL); }
   else if (is_write(medeleg)) { *dest = src & 0xb3ff; }
   else if (is_write(mideleg)) { *dest = src & 0x222; }
+  else if (is_write(vcsr)) { mstatus->vs = 3; vxrm->val = (src >> 1) & 0x3; vxsat->val = src & 0x1; }
 #ifdef CONFIG_MISA_UNCHANGEABLE
   else if (is_write(misa)) { /* do nothing */ }
 #endif
@@ -376,6 +382,7 @@ word_t csrid_read(uint32_t csrid) {
 }
 
 static void csrrw(rtlreg_t *dest, const rtlreg_t *src, uint32_t csrid) {
+  printf("csrrw %d\n", csrid);
   if (!csr_is_legal(csrid)) {
     Logti("Illegal csr id %u", csrid);
     longjmp_exception(EX_II);

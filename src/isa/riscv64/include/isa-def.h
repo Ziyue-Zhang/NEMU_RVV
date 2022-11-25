@@ -18,6 +18,7 @@
 #define __ISA_RISCV64_H__
 
 #include <common.h>
+#define CONFIG_RVV_010 1
 #ifdef CONFIG_RVV_010
 #include "../instr/rvv/vreg.h"
 #endif // CONFIG_RVV_010
@@ -85,6 +86,7 @@ typedef struct {
   } vr[32];
 
   uint64_t vstart;
+  uint64_t vcsr;
   uint64_t vxsat, vxrm, vl, vtype;
 #endif // CONFIG_RVV_010
 
@@ -199,6 +201,12 @@ typedef struct {
       uint32_t pad19     :15;
       uint32_t v_imm5    : 5;
     } v_opv3;
+    struct {
+      uint32_t pad18     :15;
+      int32_t  v_simm5   : 5;
+      uint32_t v_zimm    :10;
+      uint32_t v_bigbit  : 2;
+    } v_opv4;
     //vector-LOAD-FP
     struct {
       uint32_t pad20     :12;
