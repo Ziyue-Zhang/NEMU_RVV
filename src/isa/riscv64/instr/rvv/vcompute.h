@@ -484,19 +484,19 @@ def_EHelper(vnmsac) {
 }
 
 def_EHelper(vwaddu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_WIDE(ADD, UNSIGNED)
 }
 
 def_EHelper(vwadd) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_WIDE(ADD, SIGNED)
 }
 
 def_EHelper(vwsubu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_WIDE(SUB, UNSIGNED)
 }
 
 def_EHelper(vwsub) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_WIDE(SUB, SIGNED)
 }
 
 def_EHelper(vwaddu_w) {

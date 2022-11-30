@@ -27,7 +27,7 @@
 
 
 
-void arthimetic_instr(int opcode, int is_signed, int dest_reg, Decode *s) {
+void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s) {
   vp_set_dirty();
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -158,6 +158,8 @@ void arthimetic_instr(int opcode, int is_signed, int dest_reg, Decode *s) {
     // store to vrf
     if(dest_reg == 1) 
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+    else if (is_widening == 1)
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
     else 
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
   }

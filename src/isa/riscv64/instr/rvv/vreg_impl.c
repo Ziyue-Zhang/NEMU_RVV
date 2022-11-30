@@ -55,7 +55,6 @@ rtlreg_t check_vsetvl(rtlreg_t vtype_req, rtlreg_t vl_req, int mode) {
 }
 
 rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul) {
-  // int sum = VLEN / ((1 << vsew) * 8) * vlmul;
   int idx1 = idx / 64;
   int idx2 = idx % 64;
   
@@ -70,11 +69,7 @@ void set_mask(uint32_t reg, int idx, uint64_t mask, uint64_t vsew, uint64_t vlmu
   int idx1 = bit_idx / 64;
   int idx2 = bit_idx % 64;
 
-  uint64_t clear_bit = 0;
-  for(int i=0; i < single; i++) {
-    clear_bit  = clear_bit << 1;
-    clear_bit |= 1;
-  } // get single-bit 1-string
+  uint64_t clear_bit = (1 << single) - 1;  // get single-bit 1-string
   cpu.vr[(int)reg]._64[idx1] &= ~(clear_bit << idx2); // clear the dest position.
   cpu.vr[(int)reg]._64[idx1] |= (mask==0) ? 0 : (1lu << idx2);
 }
@@ -83,13 +78,13 @@ int get_vlmax(int vsew, int vlmul) {
   return VLEN >> (3 + vsew - vlmul);
 }
 
-int get_reg(uint64_t reg, int idx, uint64_t vsew, uint64_t vlmul) {
+int get_reg(uint64_t reg, int idx, uint64_t vsew) {
   int elem_num = VLEN >> (3 + vsew);
   int reg_off = idx / elem_num;
   return reg + reg_off;
 }
 
-int get_idx(uint64_t reg, int idx, uint64_t vsew, uint64_t vlmul) {
+int get_idx(uint64_t reg, int idx, uint64_t vsew) {
   int elem_num = VLEN >> (3 + vsew);
   int elem_idx = idx % elem_num;
   return elem_idx;
@@ -99,11 +94,8 @@ void get_vreg(uint64_t reg, int idx, rtlreg_t *dst, uint64_t vsew, uint64_t vlmu
   Assert(vlmul <= 3, "vlmul should be less than 4\n");
   Assert(vsew <= 3, "vsew should be less than 4\n");
   if(needAlign) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
-//   int new_vlmul = 1 << vlmul;
-//   int width = (1 << vsew);
-//   int width_bit = width * 8;
-  int new_reg = get_reg(reg, idx, vsew, vlmul);
-  int new_idx = get_idx(reg, idx, vsew, vlmul);
+  int new_reg = get_reg(reg, idx, vsew);
+  int new_idx = get_idx(reg, idx, vsew);
   switch (vsew) {
     case 0 : *dst = is_signed ? (char)vreg_b(new_reg, new_idx) : vreg_b(new_reg, new_idx); break;
     case 1 : *dst = is_signed ? (short)vreg_s(new_reg, new_idx) : vreg_s(new_reg, new_idx); break;
@@ -119,11 +111,8 @@ void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul
   Assert(vlmul <= 3, "vlmul should be less than 4\n");
   Assert(vsew <= 3, "vsew should be less than 4\n");
   if(needAlign) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
-//   int new_vlmul = 1 << vlmul;
-//   int width = (1 << vsew);
-//   int width_bit = width * 8;
-  int new_reg = get_reg(reg, idx, vsew, vlmul);
-  int new_idx = get_idx(reg, idx, vsew, vlmul);
+  int new_reg = get_reg(reg, idx, vsew);
+  int new_idx = get_idx(reg, idx, vsew);
 
   switch (vtype->vsew) {
     case 0 : src = src & 0xff; break;
