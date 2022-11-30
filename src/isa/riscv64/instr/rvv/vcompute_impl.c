@@ -32,6 +32,7 @@ void arthimetic_instr(int opcode, int is_signed, int dest_reg, Decode *s) {
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
+    printf("s->vm:%d\n", s->vm);
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
     if(s->vm == 0) {
       // merge instr will exec no matter mask or not

@@ -47,9 +47,10 @@ static inline def_DHelper(fload) {
 
 static inline def_DHelper(fstore) {
   decode_op_r(s, id_src1, s->isa.instr.s.rs1, true);
-  sword_t simm = (s->isa.instr.s.simm11_5 << 5) | s->isa.instr.s.imm4_0;
-  decode_op_i(s, id_src2, simm, false);
-  decode_op_fr(s, id_dest, s->isa.instr.s.rs2, false);
+//   sword_t simm = (s->isa.instr.s.simm11_5 << 5) | s->isa.instr.s.imm4_0;
+//   decode_op_i(s, id_src2, simm, false);
+  decode_op_i(s, id_src2, (sword_t)s->isa.instr.i.simm11_0, false);
+  decode_op_fr(s, id_dest, s->isa.instr.i.rd, false);
 }
 
 static inline def_DHelper(fr2r){

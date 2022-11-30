@@ -25,10 +25,7 @@
 #include "../local-include/rtl.h"
 #include <setjmp.h>
 
-def_EHelper(vsetvl) {
-
-  //vlmul+lg2(VLEN) <= vsew + vl
-  // previous decode does not load vals for us
+int get_mode(Decode *s) {
   rtl_lr(s, &(id_src1->val), id_src1->reg, 4);
   int mode = 0;
   if (id_src1->reg == 0 && id_dest->reg != 0) {
@@ -37,17 +34,35 @@ def_EHelper(vsetvl) {
   else if (id_src1->reg == 0 && id_dest->reg == 0) {
     mode = 2;
   }
-  rtlreg_t vl = check_vsetvl(id_src2->val, id_src1->val, mode);
-  printf("vl = %ld\n", vl);
+  return mode;
+}
+
+void set_vtype_vl(Decode *s, int mode) {
+  int vl_mode = get_mode(s);
+  rtlreg_t vl_num = check_vsetvl(id_src2->val, id_src1->val, vl_mode);
   rtlreg_t error = 1ul << 63;
-  if(vl==(uint64_t)-1) vcsr_write(IDXVTYPE, &error); //TODO: may cause error.
-  else vcsr_write(IDXVTYPE, &(id_src2->val));
-  vcsr_write(IDXVL, &vl);
+  
+  if(vl_num == (uint64_t)-1) {
+    vtype->val = error;
+  }
+  else {
+    vtype->val = id_src2->val;
+  }
+  
+  vl->val = vl_num;
+  printf("vl = %ld\n", vl->val);
 
-  rtl_sr(s, id_dest->reg, &vl, 8/*4*/);
+  rtl_sr(s, id_dest->reg, &vl_num, 8/*4*/);
 
-  rtl_li(s, &(s->tmp_reg[0]), 0);
-  vcsr_write(IDXVSTART, &(s->tmp_reg[0]));
+  vstart->val = 0;
+}
+
+def_EHelper(vsetvl) {
+
+  //vlmul+lg2(VLEN) <= vsew + vl
+  // previous decode does not load vals for us
+  int mode = get_mode(s);
+  set_vtype_vl(s, mode);
 
   // print_asm_template3(vsetvl);
 }
@@ -56,24 +71,8 @@ def_EHelper(vsetvli) {
 
   //vlmul+lg2(VLEN) <= vsew + vl
   // previous decode does not load vals for us
-  rtl_lr(s, &id_src1->val, id_src1->reg, 4);
-  int mode = 0;
-  if (id_src1->reg == 0 && id_dest->reg != 0) {
-    mode = 1;
-  }
-  else if (id_src1->reg == 0 && id_dest->reg == 0) {
-    mode = 2;
-  }
-  rtlreg_t vl = check_vsetvl(id_src2->val, id_src1->val, mode);
-  rtlreg_t error = 1ul << 63;
-  if(vl==(uint64_t)-1) vcsr_write(IDXVTYPE, &error); //TODO: may cause error.
-  else vcsr_write(IDXVTYPE, &(id_src2->val));
-  vcsr_write(IDXVL, &vl);
-
-  rtl_sr(s, id_dest->reg, &vl, 8/*4*/);
-
-  rtl_li(s, &(s->tmp_reg[0]), 0);
-  vcsr_write(IDXVSTART, &(s->tmp_reg[0]));
+  int mode = get_mode(s);
+  set_vtype_vl(s, mode);
 
   // print_asm_template3(vsetvl);
 }
@@ -81,16 +80,7 @@ def_EHelper(vsetvli) {
 def_EHelper(vsetivli) {
   //vlmul+lg2(VLEN) <= vsew + vl
   // previous decode does not load vals for us
-  rtlreg_t vl = check_vsetvl(id_src2->val, id_src1->val, 0);
-  rtlreg_t error = 1ul << 63;
-  if(vl==(uint64_t)-1) vcsr_write(IDXVTYPE, &error); //TODO: may cause error.
-  else vcsr_write(IDXVTYPE, &(id_src2->val));
-  vcsr_write(IDXVL, &vl);
-
-  rtl_sr(s, id_dest->reg, &vl, 8/*4*/);
-
-  rtl_li(s, &(s->tmp_reg[0]), 0);
-  vcsr_write(IDXVSTART, &(s->tmp_reg[0]));
+  set_vtype_vl(s, 0);
 
   // print_asm_template3(vsetvl);
 }
