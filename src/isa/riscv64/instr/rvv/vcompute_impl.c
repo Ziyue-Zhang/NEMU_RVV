@@ -222,11 +222,11 @@ void mask_instr(int opcode, Decode *s) {
 }
 
 
-void reduction_instr(int opcode, int is_signed, Decode *s) {
+void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
   vp_set_dirty();
   // TODO: check here: does not need align??
-  get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, is_signed, 0);
-  if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
+  get_vreg(id_src->reg, 0, s1, vtype->vsew+wide, vtype->vlmul, is_signed, 0);
+  if(is_signed) rtl_sext(s, s1, s1, 1 << (vtype->vsew+wide));
 
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -249,16 +249,20 @@ void reduction_instr(int opcode, int is_signed, Decode *s) {
       case REDOR  : rtl_or(s, s1, s0, s1); break;
       case REDAND : rtl_and(s, s1, s0, s1); break;
       case REDXOR : rtl_xor(s, s1, s0, s1); break;
+      case REDMIN : rtl_min(s, s1, s0, s1); break;
+      case REDMAX : rtl_max(s, s1, s0, s1); break;
+      case REDMINU: rtl_minu(s, s1, s0, s1); break;
+      case REDMAXU: rtl_maxu(s, s1, s0, s1); break;
       //  case MIN : 
       // MINU is hard to achieve parallel
     }
 
   }
-  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 0);
+  set_vreg(id_dest->reg, 0, *s1, vtype->vsew+wide, vtype->vlmul, 0);
   
-  int vlmax =  ((VLEN >> 3) >> vtype->vsew);
+  int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   for(int i=1; i<vlmax; i++) {
-    set_vreg(id_dest->reg, i, 0, vtype->vsew, vtype->vlmul, 0);
+    set_vreg(id_dest->reg, i, 0, vtype->vsew+wide, vtype->vlmul, 0);
   }
 }
 

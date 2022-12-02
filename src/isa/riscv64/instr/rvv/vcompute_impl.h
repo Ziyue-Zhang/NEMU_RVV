@@ -53,7 +53,7 @@ enum op_t {
 void vp_set_dirty();
 void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s);
 void mask_instr(int opcode, Decode *s);
-void reduction_instr(int opcode, int is_signed, Decode *s);
+void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 
 #define ARTHI(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, s);
 #define ARTHI_WIDE(opcode, is_signed) arthimetic_instr(opcode, is_signed, 1, 0, s);
@@ -61,7 +61,8 @@ void reduction_instr(int opcode, int is_signed, Decode *s);
 
 #define MASKINSTR(opcode) mask_instr(opcode, s);
 
-#define REDInstr(opcode, is_signed) reduction_instr(opcode, is_signed, s);
+#define REDInstr(opcode, is_signed) reduction_instr(opcode, is_signed, 0, s);
+#define REDInstr_WIDE(opcode, is_signed) reduction_instr(opcode, is_signed, 1, s);
 
 #endif // __RISCV64_VCOMPUTE_IMPL_H__
 

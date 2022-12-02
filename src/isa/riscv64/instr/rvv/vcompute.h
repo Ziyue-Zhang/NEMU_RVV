@@ -234,11 +234,11 @@ def_EHelper(vnclip) {
 }
 
 def_EHelper(vwredsumu) {
-  longjmp_raise_intr(EX_II);
+  REDInstr_WIDE(REDSUM, UNSIGNED);
 }
 
 def_EHelper(vwredsum) {
-  longjmp_raise_intr(EX_II);
+  REDInstr_WIDE(REDSUM, SIGNED);
 }
 
 def_EHelper(vdotu) {
@@ -288,19 +288,19 @@ def_EHelper(vredxor) {
 }
 
 def_EHelper(vredminu) {
-  longjmp_raise_intr(EX_II);
+  REDInstr(REDMINU, UNSIGNED);
 }
 
 def_EHelper(vredmin) {
-  longjmp_raise_intr(EX_II);
+  REDInstr(REDMIN, SIGNED);
 }
 
 def_EHelper(vredmaxu) {
-  longjmp_raise_intr(EX_II);
+  REDInstr(REDMAXU, UNSIGNED);
 }
 
 def_EHelper(vredmax) {
-  longjmp_raise_intr(EX_II);
+  REDInstr(REDMAX, SIGNED);
 }
 
 
