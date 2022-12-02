@@ -47,6 +47,8 @@ def_rtl_compute_reg_imm(xor)
 def_rtl_compute_reg_imm(shl)
 def_rtl_compute_reg_imm(shr)
 def_rtl_compute_reg_imm(sar)
+def_rtl_compute_reg_imm(min)
+def_rtl_compute_reg_imm(max)
 
 #ifdef CONFIG_ISA64
 def_rtl_compute_reg_imm(addw)
