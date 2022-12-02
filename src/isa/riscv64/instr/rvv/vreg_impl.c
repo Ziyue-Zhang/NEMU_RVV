@@ -62,16 +62,14 @@ rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul) {
 }
 
 void set_mask(uint32_t reg, int idx, uint64_t mask, uint64_t vsew, uint64_t vlmul) {
-  printf("set_mask: reg = %d, idx = %d, mask = %ld, vsew = %ld, vlmul = %ld\n", reg, idx, mask, vsew, vlmul);
-  int sum = ((VLEN >> vsew) >> 3) << vlmul;
-  int single = VLEN / sum; //(1 << vsew * 8) / vlmul;
-  int bit_idx = idx * single;
-  int idx1 = bit_idx / 64;
-  int idx2 = bit_idx % 64;
-
-  uint64_t clear_bit = (1 << single) - 1;  // get single-bit 1-string
-  cpu.vr[(int)reg]._64[idx1] &= ~(clear_bit << idx2); // clear the dest position.
-  cpu.vr[(int)reg]._64[idx1] |= (mask==0) ? 0 : (1lu << idx2);
+  int idx1 = idx / 64;
+  int idx2 = idx % 64;
+  
+  if (mask) {
+    cpu.vr[reg]._64[idx1] |= (1lu << idx2);
+  } else {
+    cpu.vr[reg]._64[idx1] &= ~(1lu << idx2);
+  }
 }
 
 int get_vlmax(int vsew, int vlmul) {
