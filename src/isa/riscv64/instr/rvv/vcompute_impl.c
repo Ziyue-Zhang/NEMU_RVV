@@ -24,8 +24,28 @@
 
 #define s0    (&tmp_reg[0])
 #define s1    (&tmp_reg[1])
+#define s2    (&tmp_reg[2])
 
-
+int carry_out(int64_t vs2, int64_t vs1, int64_t v0) {
+    int sum = vs2 + vs1 + v0;
+    if (vs2 < 0 && vs1 < 0) {
+        return sum > 0;
+    } else if (vs2 > 0 && vs1 > 0) {
+        return sum < 0;
+    } else {
+        return 0;
+    }
+}
+int borrow_out(int64_t vs2, int64_t vs1, int64_t v0) {
+    int diff = vs2 - vs1 - v0;
+    if (vs2 < 0 && vs1 > 0) {
+        return diff > 0;
+    } else if (vs2 > 0 && vs1 < 0) {
+        return diff < 0;
+    } else {
+        return 0;
+    }
+}
 
 void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s) {
   vp_set_dirty();
@@ -36,7 +56,12 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
     if(s->vm == 0) {
       // merge instr will exec no matter mask or not
       // masked and mask off exec will left dest unmodified.
-      if(opcode != MERGE && mask==0) continue;
+      if(opcode != MERGE \
+        && opcode != ADC \
+        && opcode != MADC \
+        && opcode != SBC \
+        && opcode != MSBC \
+        && mask==0) continue;
     } else if(opcode == MERGE) {
       mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
     }
@@ -70,6 +95,14 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
       case AND : rtl_and(s, s1, s0, s1); break;
       case OR  : rtl_or(s, s1, s0, s1); break;
       case XOR : rtl_xor(s, s1, s0, s1); break;
+      case ADC : 
+        rtl_add(s, s1, s0, s1);
+        rtl_li(s, s2, mask);
+        rtl_add(s, s1, s1, s2); break;
+      case SBC : 
+        rtl_sub(s, s1, s0, s1);
+        rtl_li(s, s2, mask);
+        rtl_sub(s, s1, s1, s2); break;
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid
         //rtl_sext(s0, s0, 8 - (1 << vtype->vsew)); //sext first

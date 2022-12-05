@@ -90,19 +90,19 @@ def_EHelper(vslidedown) {
 }
 
 def_EHelper(vadc) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(ADC, SIGNED)
 }
 
 def_EHelper(vmadc) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MADC, SIGNED)
 }
 
 def_EHelper(vsbc) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SBC, SIGNED)
 }
 
 def_EHelper(vmsbc) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MSBC, SIGNED)
 }
 
 def_EHelper(vmerge) {

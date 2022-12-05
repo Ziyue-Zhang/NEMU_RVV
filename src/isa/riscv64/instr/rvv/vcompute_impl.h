@@ -50,6 +50,8 @@ enum op_t {
   WADDU_W, WADD_W, WSUBU_W, WSUB_W, WMULU, WMULSU, WMUL, WMACCU,
   WNMACC, WMACCSU, WMACCUS,
 };
+int carry_out(int64_t vs2, int64_t vs1, int64_t v0);
+int borrow_out(int64_t vs2, int64_t vs1, int64_t v0);
 void vp_set_dirty();
 void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s);
 void mask_instr(int opcode, Decode *s);
