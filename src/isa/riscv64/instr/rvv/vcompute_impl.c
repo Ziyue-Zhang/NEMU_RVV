@@ -25,27 +25,7 @@
 #define s0    (&tmp_reg[0])
 #define s1    (&tmp_reg[1])
 #define s2    (&tmp_reg[2])
-
-int carry_out(int64_t vs2, int64_t vs1, int64_t v0) {
-    int sum = vs2 + vs1 + v0;
-    if (vs2 < 0 && vs1 < 0) {
-        return sum > 0;
-    } else if (vs2 > 0 && vs1 > 0) {
-        return sum < 0;
-    } else {
-        return 0;
-    }
-}
-int borrow_out(int64_t vs2, int64_t vs1, int64_t v0) {
-    int diff = vs2 - vs1 - v0;
-    if (vs2 < 0 && vs1 > 0) {
-        return diff > 0;
-    } else if (vs2 > 0 && vs1 < 0) {
-        return diff < 0;
-    } else {
-        return 0;
-    }
-}
+#define s3    (&tmp_reg[3])
 
 void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s) {
   vp_set_dirty();
@@ -87,6 +67,33 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
         break;
     }
 
+    switch (vtype->vsew) {      // get max value to check carry out
+      case 0:
+        if (opcode == MADC)
+            rtl_li(s, s3, INT8_MAX);
+        else if (opcode == MSBC)
+            rtl_li(s, s3, INT8_MIN);
+        break;
+      case 1:
+        if (opcode == MADC)
+            rtl_li(s, s3, INT16_MAX);
+        else if (opcode == MSBC)
+            rtl_li(s, s3, INT16_MIN);
+        break;
+      case 2:
+        if (opcode == MADC)
+            rtl_li(s, s3, INT32_MAX);
+        else if (opcode == MSBC)
+            rtl_li(s, s3, INT32_MIN);
+        break;
+      case 3:
+        if (opcode == MADC)
+            rtl_li(s, s3, INT64_MAX);
+        else if (opcode == MSBC)
+            rtl_li(s, s3, INT64_MIN);
+      break;
+    }
+
     // op
     switch (opcode) {
       case ADD : rtl_add(s, s1, s0, s1); break;
@@ -103,6 +110,18 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
         rtl_sub(s, s1, s0, s1);
         rtl_li(s, s2, mask);
         rtl_sub(s, s1, s1, s2); break;
+      case MADC:
+        rtl_add(s, s1, s0, s1);
+        rtl_li(s, s2, mask);
+        rtl_add(s, s1, s1, s2);
+        rtl_setrelop(s, RELOP_GT, s1, s1, s3);
+        set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul); return;
+      case MSBC:
+        rtl_sub(s, s1, s0, s1);
+        rtl_li(s, s2, mask);
+        rtl_sub(s, s1, s1, s2);
+        rtl_setrelop(s, RELOP_LT, s1, s1, s3);
+        set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul); return;
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid
         //rtl_sext(s0, s0, 8 - (1 << vtype->vsew)); //sext first
