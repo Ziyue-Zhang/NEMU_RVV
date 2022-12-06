@@ -158,15 +158,13 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         rtl_sub(s, s1, s0, s1);
         break;
       case MADD :
-        get_vreg(id_dest->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
-        rtl_mulu_lo(s, s1, s0, s1);
-        get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
+        get_vreg(id_dest->reg, idx, s2, vtype->vsew, vtype->vlmul, is_signed, 1);
+        rtl_mulu_lo(s, s1, s1, s2);
         rtl_add(s, s1, s1, s0);
         break;
       case NMSUB :
-        get_vreg(id_dest->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
-        rtl_mulu_lo(s, s1, s1, s0);
-        get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
+        get_vreg(id_dest->reg, idx, s2, vtype->vsew, vtype->vlmul, is_signed, 1);
+        rtl_mulu_lo(s, s1, s2, s1);
         rtl_sub(s, s1, s0, s1);
         break;
       case DIVU :
