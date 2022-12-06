@@ -52,13 +52,13 @@ enum op_t {
 };
 
 void vp_set_dirty();
-void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s);
+void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask, Decode *s);
 void mask_instr(int opcode, Decode *s);
 void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 
 #define ARTHI(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, s);
 #define ARTHI_WIDE(opcode, is_signed) arthimetic_instr(opcode, is_signed, 1, 0, s);
-#define ARTHI_COMP(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 1, s);
+#define ARTHI_MASK(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 1, s);
 
 #define MASKINSTR(opcode) mask_instr(opcode, s);
 

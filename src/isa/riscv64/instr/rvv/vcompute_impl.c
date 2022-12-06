@@ -27,7 +27,7 @@
 #define s2    (&tmp_reg[2])
 #define s3    (&tmp_reg[3])
 
-void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, Decode *s) {
+void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask, Decode *s) {
   vp_set_dirty();
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -102,6 +102,10 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
       case AND : rtl_and(s, s1, s0, s1); break;
       case OR  : rtl_or(s, s1, s0, s1); break;
       case XOR : rtl_xor(s, s1, s0, s1); break;
+      case MIN : rtl_min(s, s1, s0, s1); break;
+      case MAX : rtl_max(s, s1, s0, s1); break;
+      case MINU: rtl_minu(s, s1, s0, s1); break;
+      case MAXU: rtl_maxu(s, s1, s0, s1); break;
       case ADC : 
         rtl_add(s, s1, s0, s1);
         rtl_li(s, s2, mask);
@@ -111,17 +115,11 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
         rtl_li(s, s2, mask);
         rtl_sub(s, s1, s1, s2); break;
       case MADC:
-        rtl_add(s, s1, s0, s1);
         rtl_li(s, s2, mask);
-        rtl_add(s, s1, s1, s2);
-        rtl_setrelop(s, RELOP_GT, s1, s1, s3);
-        set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul); return;
+        *s1 = ((__uint128_t)(*s0) + (__uint128_t)(*s1) + (__uint128_t)(*s2)) > (__uint128_t)(*s3);
       case MSBC:
-        rtl_sub(s, s1, s0, s1);
         rtl_li(s, s2, mask);
-        rtl_sub(s, s1, s1, s2);
-        rtl_setrelop(s, RELOP_LT, s1, s1, s3);
-        set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul); return;
+        *s1 = ((__uint128_t)(*s0) - (__uint128_t)(*s1) - (__uint128_t)(*s2)) < (__uint128_t)(*s3);
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid
         //rtl_sext(s0, s0, 8 - (1 << vtype->vsew)); //sext first
@@ -207,7 +205,7 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
     }
 
     // store to vrf
-    if(dest_reg == 1) 
+    if(dest_mask == 1) 
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
     else if (is_widening == 1)
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
@@ -219,7 +217,7 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_reg, 
   // int vlmax = ((VLEN >> 3) >> vtype->vsew) << vtype->vlmul;
   // for(idx = vl->val; idx < vlmax; idx ++) {
   //   rtl_li(s1, 0);
-  //   if(dest_reg == 1) 
+  //   if(dest_mask == 1) 
   //     set_mask(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul);
   //   else 
   //     set_vreg(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul, 1);

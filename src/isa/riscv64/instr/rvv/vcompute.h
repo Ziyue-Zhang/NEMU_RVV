@@ -44,19 +44,19 @@ def_EHelper(vrsub) {
 }
 
 def_EHelper(vminu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MINU, UNSIGNED)
 }
 
 def_EHelper(vmin) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MIN, SIGNED)
 }
 
 def_EHelper(vmaxu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MAXU, UNSIGNED)
 }
 
 def_EHelper(vmax) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(MAX, SIGNED)
 }
 
 def_EHelper(vand) {
@@ -94,7 +94,7 @@ def_EHelper(vadc) {
 }
 
 def_EHelper(vmadc) {
-  ARTHI(MADC, SIGNED)
+  ARTHI_MASK(MADC, SIGNED)
 }
 
 def_EHelper(vsbc) {
@@ -102,7 +102,7 @@ def_EHelper(vsbc) {
 }
 
 def_EHelper(vmsbc) {
-  ARTHI(MSBC, SIGNED)
+  ARTHI_MASK(MSBC, SIGNED)
 }
 
 def_EHelper(vmerge) {
@@ -112,53 +112,53 @@ def_EHelper(vmerge) {
 }
 
 def_EHelper(vmseq) {
-  ARTHI_COMP(MSEQ, SIGNED)
+  ARTHI_MASK(MSEQ, SIGNED)
   // print_asm_template3(vmseq);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsne) {
-  ARTHI_COMP(MSNE, SIGNED)
+  ARTHI_MASK(MSNE, SIGNED)
   // print_asm_template3(vmsne);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsltu) {
   Assert(s->src_vmode != SRC_VI, "vmsltu not supprt SRC_VI\n");
-  ARTHI_COMP(MSLTU, UNSIGNED)
+  ARTHI_MASK(MSLTU, UNSIGNED)
   // print_asm_template3(vmsltu);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmslt) {
   Assert(s->src_vmode != SRC_VI, "vmslt not supprt SRC_VI\n");
-  ARTHI_COMP(MSLT, SIGNED)
+  ARTHI_MASK(MSLT, SIGNED)
   // print_asm_template3(vmslt);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsleu) {
-  ARTHI_COMP(MSLEU, UNSIGNED)
+  ARTHI_MASK(MSLEU, UNSIGNED)
   // print_asm_template3(vmsleu);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsle) {
-  ARTHI_COMP(MSLE, SIGNED);
+  ARTHI_MASK(MSLE, SIGNED);
   // print_asm_template3(vmsle);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsgtu) {
   Assert(s->src_vmode != SRC_VV, "vmsgtu not support SRC_VV\n");
-  ARTHI_COMP(MSGTU, UNSIGNED)
+  ARTHI_MASK(MSGTU, UNSIGNED)
   // print_asm_template3(vmsgtu);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vmsgt) {
   Assert(s->src_vmode != SRC_VV, "vmsgt not support SRC_VV\n");
-  ARTHI_COMP(MSGT, SIGNED)
+  ARTHI_MASK(MSGT, SIGNED)
   // print_asm_template3(vmsgt);
   // longjmp_raise_intr(EX_II);
 }
