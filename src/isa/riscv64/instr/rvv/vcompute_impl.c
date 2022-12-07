@@ -117,9 +117,11 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
       case MADC:
         rtl_li(s, s2, mask);
         *s1 = ((__uint128_t)(*s0) + (__uint128_t)(*s1) + (__uint128_t)(*s2)) > (__uint128_t)(*s3);
+        break;
       case MSBC:
         rtl_li(s, s2, mask);
         *s1 = ((__uint128_t)(*s0) - (__uint128_t)(*s1) - (__uint128_t)(*s2)) < (__uint128_t)(*s3);
+        break;
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid
         //rtl_sext(s0, s0, 8 - (1 << vtype->vsew)); //sext first
@@ -261,7 +263,7 @@ void mask_instr(int opcode, Decode *s) {
     set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
   }
 
-  int vlmax = ((VLEN >> 3) >> vtype->vsew) << vtype->vlmul;
+  int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   rtl_li(s, s1, 0);
   for( idx = vl->val; idx < vlmax; idx++) {  
     set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
