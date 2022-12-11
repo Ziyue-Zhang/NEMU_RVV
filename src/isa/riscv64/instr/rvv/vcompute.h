@@ -303,10 +303,15 @@ def_EHelper(vredmax) {
   REDInstr(REDMAX, SIGNED);
 }
 
+def_EHelper(vmvsx) {
+  longjmp_raise_intr(EX_II);
+}
 
+def_EHelper(vmvxs) {
+  longjmp_raise_intr(EX_II);
+}
 
-
-def_EHelper(vmpopc) {
+def_EHelper(vpopc) {
   // longjmp_raise_intr(EX_II);
   if(vstart->val != 0)
     longjmp_raise_intr(EX_II);
@@ -328,7 +333,7 @@ def_EHelper(vmpopc) {
   rtl_sr(s, id_dest->reg, s1, 4);
 }
 
-def_EHelper(vmfirst) {
+def_EHelper(vfirst) {
   // longjmp_raise_intr(EX_II);
   if(vstart->val != 0)
     longjmp_raise_intr(EX_II);
@@ -347,7 +352,27 @@ def_EHelper(vmfirst) {
   rtl_sr(s, id_dest->reg, s1, 4);
 }
 
-def_EHelper(vmunaryo) {
+def_EHelper(vmsbf) {
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmsof) {
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmsif) {
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(viota) {
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vid) {
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vxunary0) {
   longjmp_raise_intr(EX_II);
 }
 

@@ -42,8 +42,11 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         && opcode != SBC \
         && opcode != MSBC \
         && mask==0) continue;
-    } else if(opcode == MERGE) {
-      mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
+
+    } else {
+      if(opcode == MERGE) {
+        mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
+      }
     }
 
     // operand - vs2
@@ -281,12 +284,8 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    if(s->vm == 0) {
-      // merge instr will exec no matter mask or not
-      // masked and mask off exec will left dest unmodified.
-      if(opcode != MERGE && mask==0) continue;
-    } else if(opcode == MERGE) {
-      mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
+    if(s->vm == 0 && mask==0) {
+      continue;
     }
     // operand - vs2
     get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);

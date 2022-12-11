@@ -72,8 +72,9 @@
   f(vdotu) f(vdot) f(vwsmaccu) f(vwsmacc) \
   f(vwsmaccsu) f(vwsmaccus) f(vredsum) \
   f(vredand) f(vredor) f(vredxor) f(vredminu) \
-  f(vredmin) f(vredmaxu) f(vredmax) f(vmpopc) \
-  f(vmfirst) f(vmunaryo) f(vcompress) f(vmandnot) \
+  f(vredmin) f(vredmaxu) f(vredmax) f(vxunary0) f(vmvsx) \
+  f(vmvxs) f(vpopc) f(vfirst) f(vmsbf) f(vmsof) \
+  f(vmsif) f(viota) f(vid) f(vcompress) f(vmandnot) \
   f(vmand) f(vmor) f(vmxor) f(vmornot) f(vmnand) \
   f(vmnor) f(vmxnor) f(vdivu) f(vdiv) f(vremu) \
   f(vrem) f(vmulhu) f(vmul) f(vmulhsu) f(vmulh) \
