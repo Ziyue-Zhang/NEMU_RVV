@@ -64,6 +64,7 @@ rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul) {
 void set_mask(uint32_t reg, int idx, uint64_t mask, uint64_t vsew, uint64_t vlmul) {
   int idx1 = idx / 64;
   int idx2 = idx % 64;
+  printf("set_mask: idx1 = %d, idx2 = %d, mask = %ld\n", idx1, idx2, mask);
   
   if (mask) {
     cpu.vr[reg]._64[idx1] |= (1lu << idx2);
@@ -112,14 +113,14 @@ void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul
   int new_reg = get_reg(reg, idx, vsew);
   int new_idx = get_idx(reg, idx, vsew);
 
-  switch (vtype->vsew) {
+  switch (vsew) {
     case 0 : src = src & 0xff; break;
     case 1 : src = src & 0xffff; break;
     case 2 : src = src & 0xffffffff; break;
     case 3 : src = src & 0xffffffffffffffff; break;
   }
-  printf("set_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, src);
-  switch (vtype->vsew) {
+  printf("set_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx vsew: %lu\n", reg, idx, new_reg, new_idx, src, vsew);
+  switch (vsew) {
     case 0 : vreg_b(new_reg, new_idx) = (uint8_t  )src; break;
     case 1 : vreg_s(new_reg, new_idx) = (uint16_t )src; break;
     case 2 : vreg_i(new_reg, new_idx) = (uint32_t )src; break;
