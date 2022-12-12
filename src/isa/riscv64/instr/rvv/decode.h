@@ -186,8 +186,6 @@ def_THelper(vsetvl_dispatch) {
 
 // All RVV instructions decode start from here
 def_THelper(OP_V) { // 10_101
-  uint64_t pc = cpu.pc;
-  printf("%016lx\n", pc);
   if (!vp_enable()) {
     return EXEC_ID_inv;
   }

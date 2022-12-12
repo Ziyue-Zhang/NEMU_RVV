@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <common.h>
+#define CONFIG_RVV_010 1
 #ifdef CONFIG_RVV_010
 
 #include "vcompute_impl.h"
@@ -329,7 +330,6 @@ def_EHelper(vcpop) {
     if(*s0 == 1)
       rtl_addi(s, s1, s1, 1);
   }
-  printf("vcpop: %ld\n", *s1);
   rtl_sr(s, id_dest->reg, s1, 4);
 }
 
@@ -338,38 +338,123 @@ def_EHelper(vfirst) {
   if(vstart->val != 0)
     longjmp_raise_intr(EX_II);
   
-  int vlmax = ((VLEN >> 3) >> vtype->vsew) << vtype->vlmul;
-  int idx;
-  for(idx = 0; idx < vlmax; idx ++) {
+  int pos = -1;
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
     *s0 &= 1;
-    if(*s0 == 1) break;
+    if(*s0 == 1) {
+        pos = idx;
+        break;
+    }
   }
-  if(idx < vlmax)
-    rtl_li(s, s1, idx);  
-  else
-    rtl_li(s, s1, -1);
+  rtl_li(s, s1, pos);
   rtl_sr(s, id_dest->reg, s1, 4);
 }
 
 def_EHelper(vmsbf) {
-  longjmp_raise_intr(EX_II);
+  if(vstart->val != 0)
+    longjmp_raise_intr(EX_II);
+
+  bool first_one = false;
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask == 0)
+      continue;
+    
+    *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
+    *s0 &= 1;
+
+    if(!first_one && *s0 == 1) {
+      first_one = true;
+    }
+
+    if(first_one) {
+      set_mask(id_dest->reg, idx, 0, vtype->vsew, vtype->vlmul);
+    } else{
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+    }
+  }
 }
 
 def_EHelper(vmsof) {
-  longjmp_raise_intr(EX_II);
+  if(vstart->val != 0)
+    longjmp_raise_intr(EX_II);
+
+  bool first_one = false;
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask == 0)
+      continue;
+    
+    *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
+    *s0 &= 1;
+
+    if(!first_one && *s0 == 1) {
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      first_one = true;
+      continue;
+    }
+    set_mask(id_dest->reg, idx, 0, vtype->vsew, vtype->vlmul);
+  }
 }
 
 def_EHelper(vmsif) {
-  longjmp_raise_intr(EX_II);
+  if(vstart->val != 0)
+    longjmp_raise_intr(EX_II);
+
+  bool first_one = false;
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask == 0)
+      continue;
+    
+    *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
+    *s0 &= 1;
+
+    if(first_one) {
+      set_mask(id_dest->reg, idx, 0, vtype->vsew, vtype->vlmul);
+    } else{
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+    }
+
+    if(!first_one && *s0 == 1) {
+      first_one = true;
+    }
+  }
 }
 
 def_EHelper(viota) {
-  longjmp_raise_intr(EX_II);
+  if(vstart->val != 0)
+    longjmp_raise_intr(EX_II);
+
+  rtl_li(s, s1, 0);
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask == 0)
+      continue;
+    
+    *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
+    *s0 &= 1;
+
+    set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    
+    if(*s0 == 1) {
+      rtl_addi(s, s1, s1, 1);
+    }
+  }
 }
 
 def_EHelper(vid) {
-  longjmp_raise_intr(EX_II);
+  for(int idx = 0; idx < vl->val; idx ++) {
+        // mask
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    // Masking does not change the index value written to active elements.
+    if(s->vm == 0 && mask == 0)
+      continue;
+
+    rtl_li(s, s1, idx);
+    set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+  }
 }
 
 def_EHelper(vxunary0) {

@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <common.h>
+#define CONFIG_RVV_010 1
 #ifdef CONFIG_RVV_010
 
 #include "vcompute_impl.h"
