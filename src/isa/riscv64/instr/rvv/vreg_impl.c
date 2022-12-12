@@ -100,7 +100,7 @@ void get_vreg(uint64_t reg, int idx, rtlreg_t *dst, uint64_t vsew, uint64_t vlmu
     case 2 : *dst = is_signed ? (int)vreg_i(new_reg, new_idx) : vreg_i(new_reg, new_idx); break;
     case 3 : *dst = is_signed ? (long)vreg_l(new_reg, new_idx) : vreg_l(new_reg, new_idx); break;
   }
-  printf("reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, *dst);
+  printf("get_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, *dst);
   // printf("get_vreg: idx:%d reg:%lu new_idx:%d new_reg:%d vsew:%lu vlmul:%lu\n", 
   //         idx, reg, new_idx, new_reg, vsew, vlmul);
 }
@@ -118,7 +118,7 @@ void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul
     case 2 : src = src & 0xffffffff; break;
     case 3 : src = src & 0xffffffffffffffff; break;
   }
-  printf("reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, src);
+  printf("set_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, src);
   switch (vtype->vsew) {
     case 0 : vreg_b(new_reg, new_idx) = (uint8_t  )src; break;
     case 1 : vreg_s(new_reg, new_idx) = (uint16_t )src; break;

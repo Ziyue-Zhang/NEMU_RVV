@@ -311,14 +311,13 @@ def_EHelper(vmvxs) {
   longjmp_raise_intr(EX_II);
 }
 
-def_EHelper(vpopc) {
+def_EHelper(vcpop) {
   // longjmp_raise_intr(EX_II);
   if(vstart->val != 0)
     longjmp_raise_intr(EX_II);
   
-  int vlmax = ((VLEN >> 3) >> vtype->vsew) << vtype->vlmul;
   rtl_li(s, s1, 0);
-  for(int idx = 0; idx < vlmax; idx ++) {
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
         // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
     if(s->vm == 0 && mask == 0)
@@ -330,6 +329,7 @@ def_EHelper(vpopc) {
     if(*s0 == 1)
       rtl_addi(s, s1, s1, 1);
   }
+  printf("vcpop: %ld\n", *s1);
   rtl_sr(s, id_dest->reg, s1, 4);
 }
 
