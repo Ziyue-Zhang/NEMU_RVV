@@ -71,33 +71,6 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         break;
     }
 
-    switch (vtype->vsew) {      // get max value to check carry out
-      case 0:
-        if (opcode == MADC)
-            rtl_li(s, s3, INT8_MAX);
-        else if (opcode == MSBC)
-            rtl_li(s, s3, INT8_MIN);
-        break;
-      case 1:
-        if (opcode == MADC)
-            rtl_li(s, s3, INT16_MAX);
-        else if (opcode == MSBC)
-            rtl_li(s, s3, INT16_MIN);
-        break;
-      case 2:
-        if (opcode == MADC)
-            rtl_li(s, s3, INT32_MAX);
-        else if (opcode == MSBC)
-            rtl_li(s, s3, INT32_MIN);
-        break;
-      case 3:
-        if (opcode == MADC)
-            rtl_li(s, s3, INT64_MAX);
-        else if (opcode == MSBC)
-            rtl_li(s, s3, INT64_MIN);
-      break;
-    }
-
     // op
     switch (opcode) {
       case ADD : rtl_add(s, s1, s0, s1); break;
@@ -119,12 +92,38 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         rtl_li(s, s2, mask);
         rtl_sub(s, s1, s1, s2); break;
       case MADC:
-        rtl_li(s, s2, mask);
-        *s1 = ((__uint128_t)(*s0) + (__uint128_t)(*s1) + (__uint128_t)(*s2)) > (__uint128_t)(*s3);
+        if ((int64_t)*s1 >= 0 && (int64_t)*s0 >= 0) {
+            int64_t tmp = (int64_t)*s0 + (int64_t)*s1 + mask;
+            if (tmp < 0) {
+                rtl_li(s, s1, 1);
+            } else {
+                rtl_li(s, s1, 0);
+            }
+        } else {
+            int64_t tmp = (int64_t)*s0 + (int64_t)*s1 + mask;
+            if (tmp >= 0) {
+                rtl_li(s, s1, 1);
+            } else {
+                rtl_li(s, s1, 0);
+            }
+        }
         break;
       case MSBC:
-        rtl_li(s, s2, mask);
-        *s1 = ((__uint128_t)(*s0) - (__uint128_t)(*s1) - (__uint128_t)(*s2)) < (__uint128_t)(*s3);
+        if ((int64_t)*s0 >= 0 && (int64_t)*s1 >= 0) {
+            int64_t tmp = (int64_t)*s0 - (int64_t)*s1 - mask;
+            if (tmp < 0) {
+                rtl_li(s, s1, 1);
+            } else {
+                rtl_li(s, s1, 0);
+            }
+        } else {
+            int64_t tmp = (int64_t)*s0 - (int64_t)*s1 - mask;
+            if (tmp >= 0) {
+                rtl_li(s, s1, 1);
+            } else {
+                rtl_li(s, s1, 0);
+            }
+        }
         break;
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid
