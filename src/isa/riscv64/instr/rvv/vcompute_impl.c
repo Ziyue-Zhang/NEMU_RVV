@@ -28,7 +28,7 @@
 #define s2    (&tmp_reg[2])
 #define s3    (&tmp_reg[3])
 
-void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask, Decode *s) {
+void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   vp_set_dirty();
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -51,7 +51,7 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
     }
 
     // operand - vs2
-    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
+    get_vreg(id_src2->reg, idx, s0, vtype->vsew+narrow, vtype->vlmul, is_signed, 1);
      if(is_signed) rtl_sext(s, s0, s0, 1 << vtype->vsew);
 
     // operand - s1 / rs1 / imm
@@ -140,6 +140,9 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         *s1 = (uint64_t)(((__uint128_t)(*s0) * (__uint128_t)(*s1))>>(s->v_width*8));
         break;
       case MUL : rtl_mulu_lo(s, s1, s0, s1); break;
+      case MULSU : 
+        rtl_sext(s, s0, s0, 1 << vtype->vsew);
+        rtl_mulu_lo(s, s1, s0, s1); break;
       case MULHSU :
         rtl_sext(s, t0, s0, s->v_width);
         rtl_sari(s, t0, t0, s->v_width*8-1);
@@ -154,7 +157,19 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
         break;
       case MACC : 
         rtl_mulu_lo(s, s1, s0, s1);
-        get_vreg(id_dest->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
+        get_vreg(id_dest->reg, idx, s0, vtype->vsew+widening, vtype->vlmul, is_signed, 1);
+        rtl_add(s, s1, s1, s0);
+        break;
+      case MACCSU :
+        rtl_sext(s, s1, s1, 1 << vtype->vsew);
+        rtl_mulu_lo(s, s1, s0, s1);
+        get_vreg(id_dest->reg, idx, s0, vtype->vsew+widening, vtype->vlmul, is_signed, 1);
+        rtl_add(s, s1, s1, s0);
+        break;
+      case MACCUS :
+        rtl_sext(s, s0, s0, 1 << vtype->vsew);
+        rtl_mulu_lo(s, s1, s0, s1);
+        get_vreg(id_dest->reg, idx, s0, vtype->vsew+widening, vtype->vlmul, is_signed, 1);
         rtl_add(s, s1, s1, s0);
         break;
       case NMSAC :
@@ -210,10 +225,8 @@ void arthimetic_instr(int opcode, int is_signed, int is_widening, int dest_mask,
     // store to vrf
     if(dest_mask == 1) 
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
-    else if (is_widening == 1)
-      set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
-    else 
-      set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    else
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
   }
 
   // idx gt the vl need to be zeroed.

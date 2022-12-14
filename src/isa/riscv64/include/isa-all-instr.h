@@ -81,7 +81,7 @@
   f(vmadd) f(vnmsub) f(vmacc) f(vnmsac) f(vwaddu) \
   f(vwadd) f(vwsub) f(vwsubu) f(vwaddu_w) f(vwadd_w) \
   f(vwsubu_w) f(vwsub_w) f(vwmulu) f(vwmulsu) \
-  f(vwmul) f(vwmaccu) f(vwnmacc) f(vwmaccsu) \
+  f(vwmul) f(vwmaccu) f(vwmacc) f(vwmaccsu) \
   f(vwmaccus) f(vlduu) f(vldsu) f(vldxu) \
   f(vldus) f(vldss) f(vldxs) f(vstu) \
   f(vsts) f(vstx) f(vstxu) f(vsetvl) f(vsetvli) f(vsetivli) \
