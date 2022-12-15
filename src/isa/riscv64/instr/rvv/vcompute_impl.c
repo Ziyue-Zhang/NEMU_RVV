@@ -130,11 +130,20 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         //rtl_sext(s0, s0, 8 - (1 << vtype->vsew)); //sext first
         rtl_shl(s, s1, s0, s1); break;
       case SRL :
-        rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW)
+        if (narrow)
+            rtl_andi(s, s1, s1, s->v_width*16-1); //low lg2(SEW)
+        else
+            rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW)
         rtl_shr(s, s1, s0, s1); break;
       case SRA :
-        rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW)
-        rtl_sext(s, s0, s0, s->v_width);
+        if (narrow) {
+            rtl_andi(s, s1, s1, s->v_width*16-1); //low lg2(SEW)
+            rtl_sext(s, s0, s0, s->v_width*2);
+        }
+        else {
+            rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW)
+            rtl_sext(s, s0, s0, s->v_width);
+        }
         rtl_sar(s, s1, s0, s1); break;
       case MULHU : 
         *s1 = (uint64_t)(((__uint128_t)(*s0) * (__uint128_t)(*s1))>>(s->v_width*8));
