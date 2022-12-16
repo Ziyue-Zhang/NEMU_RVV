@@ -48,7 +48,7 @@ enum op_t {
   DIVU, DIV, REMU, REM, MULHU, MUL, MULHSU, MULH, MULSU,
   MADD, NMSUB, MACC, NMSAC, MACCSU, MACCUS, WADDU, WADD, WSUBU, WSUB,
   WADDU_W, WADD_W, WSUBU_W, WSUB_W, WMULU, WMULSU, WMUL, WMACCU,
-  WNMACC, WMACCSU, WMACCUS,
+  WNMACC, WMACCSU, WMACCUS, VEXT
 };
 
 void vp_set_dirty();
@@ -59,7 +59,7 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 #define ARTHI(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, 0, s);
 #define ARTHI_WIDE(opcode, is_signed) arthimetic_instr(opcode, is_signed, 1, 0, 0, s);
 #define ARTHI_MASK(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, 1, s);
-#define ARTHI_NARROW(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 1, 0, s);
+#define ARTHI_NARROW(opcode, is_signed, narrow) arthimetic_instr(opcode, is_signed, 0, narrow, 0, s);
 
 #define MASKINSTR(opcode) mask_instr(opcode, s);
 

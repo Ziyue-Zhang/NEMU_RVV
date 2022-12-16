@@ -72,7 +72,7 @@
   f(vdotu) f(vdot) f(vwsmaccu) f(vwsmacc) \
   f(vwsmaccsu) f(vwsmaccus) f(vredsum) \
   f(vredand) f(vredor) f(vredxor) f(vredminu) \
-  f(vredmin) f(vredmaxu) f(vredmax) f(vxunary0) f(vmvsx) \
+  f(vredmin) f(vredmaxu) f(vredmax) f(vmvsx) \
   f(vmvxs) f(vcpop) f(vfirst) f(vmsbf) f(vmsof) \
   f(vmsif) f(viota) f(vid) f(vcompress) f(vmandnot) \
   f(vmand) f(vmor) f(vmxor) f(vmornot) f(vmnand) \
@@ -88,7 +88,8 @@
   f(vlduu_mmu) f(vldsu_mmu) f(vldxu_mmu) \
   f(vldus_mmu) f(vldss_mmu) f(vldxs_mmu) f(vstu_mmu) \
   f(vsts_mmu) f(vstx_mmu) f(vstxu_mmu) \
-  f(vslideup) f(vslidedown) f(vslide1up) f(vslide1down) f(vmvnr)
+  f(vslideup) f(vslidedown) f(vslide1up) f(vslide1down) f(vmvnr) \
+  f(vzextvf8) f(vsextvf8) f(vzextvf4) f(vsextvf4) f(vzextvf2) f(vsextvf2)
 #else // CONFIG_RVV_010
 #define VECTOR_INSTR_TERNARY(f)
 #endif // CONFIG_RVV_010

@@ -84,6 +84,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case MAX : rtl_max(s, s1, s0, s1); break;
       case MINU: rtl_minu(s, s1, s0, s1); break;
       case MAXU: rtl_maxu(s, s1, s0, s1); break;
+      case VEXT: rtl_mv(s, s1, s0); break;
       case ADC : 
         rtl_add(s, s1, s0, s1);
         rtl_li(s, s2, mask);

@@ -231,11 +231,11 @@ def_EHelper(vssra) {
 }
 
 def_EHelper(vnsrl) {
-  ARTHI_NARROW(SRL, UNSIGNED)
+  ARTHI_NARROW(SRL, UNSIGNED, 1)
 }
 
 def_EHelper(vnsra) {
-  ARTHI_NARROW(SRA, UNSIGNED)
+  ARTHI_NARROW(SRA, UNSIGNED, 1)
 }
 
 def_EHelper(vnclipu) {
@@ -330,7 +330,18 @@ def_EHelper(vmvxs) {
 }
 
 def_EHelper(vmvnr) {
-    longjmp_raise_intr(EX_II);
+    rtl_li(s, s1, s->isa.instr.v_opv3.v_imm5 );
+    int NREG = (*s1) + 1;
+    int len = (VLEN >> 6) * NREG;
+    int vlmul = 0;
+    while (NREG > 1) {
+      NREG = NREG >> 1;
+      vlmul++;
+    }
+    for (int i = 0; i < len; i++) {
+      get_vreg(id_src2->reg, i, s0, 3, vlmul, 1, 1);
+      set_vreg(id_dest->reg, i, *s0, 3, vlmul, 1);
+    }
 }
 
 def_EHelper(vcpop) {
@@ -478,12 +489,48 @@ def_EHelper(vid) {
   }
 }
 
-def_EHelper(vxunary0) {
-  longjmp_raise_intr(EX_II);
+def_EHelper(vzextvf8) {
+  ARTHI_NARROW(VEXT, UNSIGNED, -3);
+}
+
+def_EHelper(vsextvf8) {
+  ARTHI_NARROW(VEXT, SIGNED, -3);
+}
+
+def_EHelper(vzextvf4) {
+  ARTHI_NARROW(VEXT, UNSIGNED, -2);
+}
+
+def_EHelper(vsextvf4) {
+  ARTHI_NARROW(VEXT, SIGNED, -2);
+}
+
+def_EHelper(vzextvf2) {
+  ARTHI_NARROW(VEXT, UNSIGNED, -1);
+}
+
+def_EHelper(vsextvf2) {
+  ARTHI_NARROW(VEXT, SIGNED, -1);
 }
 
 def_EHelper(vcompress) {
-  longjmp_raise_intr(EX_II);
+  if(vstart->val != 0)
+    longjmp_raise_intr(EX_II);
+
+  rtl_li(s, s1, 0);
+  for(int idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(id_src1->reg, idx, vtype->vsew, vtype->vlmul);
+    
+    if (mask == 0) {
+        continue;
+    }
+
+    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 1, 1);
+
+    set_vreg(id_dest->reg, *s1, *s0, vtype->vsew, vtype->vlmul, 1);
+    
+    rtl_addi(s, s1, s1, 1);
+  }
 }
 
 def_EHelper(vmandnot) {
