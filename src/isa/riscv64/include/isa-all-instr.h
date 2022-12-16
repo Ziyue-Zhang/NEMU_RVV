@@ -60,7 +60,7 @@
 #define VECTOR_INSTR_TERNARY(f) \
   f(vadd) f(vsub) f(vrsub) f(vminu) f(vmin) \
   f(vmaxu) f(vmax) f(vand) f(vor) f(vxor) \
-  f(vrgather)  \
+  f(vrgather) f(vrgatherei16) \
   f(vadc) f(vmadc) f(vsbc) f(vmsbc) \
   f(vmerge) f(vmseq) f(vmsne) f(vmsltu) \
   f(vmslt) f(vmsleu) f(vmsle) f(vmsgtu) \
@@ -88,7 +88,7 @@
   f(vlduu_mmu) f(vldsu_mmu) f(vldxu_mmu) \
   f(vldus_mmu) f(vldss_mmu) f(vldxs_mmu) f(vstu_mmu) \
   f(vsts_mmu) f(vstx_mmu) f(vstxu_mmu) \
-  f(vslideup) f(vslidedown) f(vslide1up) f(vslide1down)
+  f(vslideup) f(vslidedown) f(vslide1up) f(vslide1down) f(vmvnr)
 #else // CONFIG_RVV_010
 #define VECTOR_INSTR_TERNARY(f)
 #endif // CONFIG_RVV_010

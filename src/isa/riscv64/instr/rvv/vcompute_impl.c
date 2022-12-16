@@ -61,7 +61,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         get_vreg(id_src->reg, idx, s1, vtype->vsew, vtype->vlmul, is_signed, 1);
         if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
         break;
-      case SRC_VS :   
+      case SRC_VX :   
         rtl_lr(s, &(id_src->val), id_src1->reg, 4);
         rtl_mv(s, s1, &id_src->val); 
         if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
@@ -243,6 +243,15 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         break;
       case SLIDE1DOWN :
         if (idx < vl->val - 1) get_vreg(id_src2->reg, idx + 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
+      case RGATHER :
+        if (*s1 < vlmax) get_vreg(id_src2->reg, *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        else rtl_li(s, s1, 0);
+        break;
+      case RGATHEREI16 :
+        get_vreg(id_src1->reg, idx, s1, 1, vtype->vlmul, 0, 1);
+        if (*s1 < vlmax) get_vreg(id_src2->reg, *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        else rtl_li(s, s1, 0);
         break;
     }
 

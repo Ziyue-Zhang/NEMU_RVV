@@ -79,7 +79,11 @@ def_EHelper(vxor) {
 }
 
 def_EHelper(vrgather) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(RGATHER, UNSIGNED)
+}
+
+def_EHelper(vrgatherei16) {
+  ARTHI(RGATHEREI16, UNSIGNED)
 }
 
 def_EHelper(vslideup) {
@@ -313,11 +317,20 @@ def_EHelper(vredmax) {
 }
 
 def_EHelper(vmvsx) {
-  longjmp_raise_intr(EX_II);
+  rtl_lr(s, &(id_src->val), id_src1->reg, 4);
+  rtl_mv(s, s1, &id_src->val); 
+  rtl_sext(s, s1, s1, 1 << vtype->vsew);
+  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
 }
 
 def_EHelper(vmvxs) {
-  longjmp_raise_intr(EX_II);
+  get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
+  rtl_sext(s, s0, s0, 1 << 3);
+  rtl_sr(s, id_dest->reg, s0, 4);
+}
+
+def_EHelper(vmvnr) {
+    longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vcpop) {
