@@ -83,11 +83,19 @@ def_EHelper(vrgather) {
 }
 
 def_EHelper(vslideup) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SLIDEUP, UNSIGNED)
 }
 
 def_EHelper(vslidedown) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SLIDEDOWN, UNSIGNED)
+}
+
+def_EHelper(vslide1up) {
+  ARTHI(SLIDE1UP, UNSIGNED)
+}
+
+def_EHelper(vslide1down) {
+  ARTHI(SLIDE1DOWN, UNSIGNED)
 }
 
 def_EHelper(vadc) {

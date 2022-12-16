@@ -87,7 +87,8 @@
   f(vsts) f(vstx) f(vstxu) f(vsetvl) f(vsetvli) f(vsetivli) \
   f(vlduu_mmu) f(vldsu_mmu) f(vldxu_mmu) \
   f(vldus_mmu) f(vldss_mmu) f(vldxs_mmu) f(vstu_mmu) \
-  f(vsts_mmu) f(vstx_mmu) f(vstxu_mmu) f(vslideup) f(vslidedown)
+  f(vsts_mmu) f(vstx_mmu) f(vstxu_mmu) \
+  f(vslideup) f(vslidedown) f(vslide1up) f(vslide1down)
 #else // CONFIG_RVV_010
 #define VECTOR_INSTR_TERNARY(f)
 #endif // CONFIG_RVV_010

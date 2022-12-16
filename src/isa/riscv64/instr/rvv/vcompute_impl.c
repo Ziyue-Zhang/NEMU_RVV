@@ -30,6 +30,7 @@
 
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   vp_set_dirty();
+  int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
@@ -229,6 +230,20 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case MSLE  : rtl_setrelop(s, RELOP_LE,  s1, s0, s1); break;
       case MSGTU : rtl_setrelop(s, RELOP_GTU, s1, s0, s1); break;
       case MSGT  : rtl_setrelop(s, RELOP_GT,  s1, s0, s1); break;
+      case SLIDEUP :
+        if (idx >= *s1) get_vreg(id_src2->reg, idx - *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        else get_vreg(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
+      case SLIDEDOWN :
+        if (idx + *s1 < vlmax) get_vreg(id_src2->reg, idx + *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        else rtl_li(s, s1, 0);
+        break;
+      case SLIDE1UP :
+        if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
+      case SLIDE1DOWN :
+        if (idx < vl->val - 1) get_vreg(id_src2->reg, idx + 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
     }
 
     // store to vrf
