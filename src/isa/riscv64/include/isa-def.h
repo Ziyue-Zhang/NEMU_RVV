@@ -86,8 +86,8 @@ typedef struct {
   } vr[32];
 
   uint64_t vstart;
-  uint64_t vcsr;
-  uint64_t vxsat, vxrm, vl, vtype;
+  uint64_t vxsat, vxrm, vcsr;
+  uint64_t vl, vtype, vlenb;
 #endif // CONFIG_RVV_010
 
   // exec state

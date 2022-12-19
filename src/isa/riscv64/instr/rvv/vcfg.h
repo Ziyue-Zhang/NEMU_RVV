@@ -50,7 +50,6 @@ void set_vtype_vl(Decode *s, int mode) {
   }
   
   vl->val = vl_num;
-  printf("vl = %ld\n", vl->val);
 
   rtl_sr(s, id_dest->reg, &vl_num, 8/*4*/);
 
