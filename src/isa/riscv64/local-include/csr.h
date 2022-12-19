@@ -75,7 +75,8 @@
   f(vxrm, 0x00a) \
   f(vcsr, 0x00f) \
   f(vl, 0xc20) \
-  f(vtype, 0xc21)
+  f(vtype, 0xc21) \
+  f(vlenb, 0xc22)
 #endif
 
 #ifdef CONFIG_RV_ARCH_CSRS
@@ -395,6 +396,7 @@ CSR_STRUCT_END(mtime)
 #define IDXVXRM   0x00a
 #define IDXVL     0xc20
 #define IDXVTYPE  0xc21
+#define IDXVLENB  0xc22
 
 CSR_STRUCT_START(vstart)
 CSR_STRUCT_END(vstart)
@@ -425,6 +427,9 @@ CSR_STRUCT_START(vtype)
   uint64_t pad   : 55;
   uint64_t vill  :  1;
 CSR_STRUCT_END(vtype)
+
+CSR_STRUCT_START(vlenb)
+CSR_STRUCT_END(vlenb)
 
 rtlreg_t check_vsetvl(rtlreg_t vtype_req, rtlreg_t vl_req, int mode);
 rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul);
