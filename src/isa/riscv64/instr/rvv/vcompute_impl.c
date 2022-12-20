@@ -312,13 +312,6 @@ void mask_instr(int opcode, Decode *s) {
     *s1 &= 1; // make sure the LSB
     set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
   }
-
-  int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
-  rtl_li(s, s1, 0);
-  for( idx = vl->val; idx < vlmax; idx++) {  
-    set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
-  }
-  vcsr_write(IDXVSTART, s1);
 }
 
 

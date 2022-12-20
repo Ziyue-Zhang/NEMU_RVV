@@ -64,7 +64,7 @@ rtlreg_t get_mask(int reg, int idx, uint64_t vsew, uint64_t vlmul) {
 void set_mask(uint32_t reg, int idx, uint64_t mask, uint64_t vsew, uint64_t vlmul) {
   int idx1 = idx / 64;
   int idx2 = idx % 64;
-  printf("set_mask: idx1 = %d, idx2 = %d, mask = %ld\n", idx1, idx2, mask);
+  //printf("set_mask: idx1 = %d, idx2 = %d, mask = %ld\n", idx1, idx2, mask);
   
   if (mask) {
     cpu.vr[reg]._64[idx1] |= (1lu << idx2);
