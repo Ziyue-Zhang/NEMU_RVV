@@ -678,19 +678,19 @@ def_EHelper(vwsub) {
 }
 
 def_EHelper(vwaddu_w) {
-  longjmp_raise_intr(EX_II);
+  arthimetic_instr(ADD, UNSIGNED, 1, 1, 0, s);
 }
 
 def_EHelper(vwadd_w) {
-  longjmp_raise_intr(EX_II);
+  arthimetic_instr(ADD, SIGNED, 1, 1, 0, s);
 }
 
 def_EHelper(vwsubu_w) {
-  longjmp_raise_intr(EX_II);
+  arthimetic_instr(SUB, UNSIGNED, 1, 1, 0, s);
 }
 
 def_EHelper(vwsub_w) {
-  longjmp_raise_intr(EX_II);
+  arthimetic_instr(SUB, SIGNED, 1, 1, 0, s);
 }
 
 def_EHelper(vwmulu) {

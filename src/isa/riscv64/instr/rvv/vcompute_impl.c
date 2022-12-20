@@ -53,7 +53,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
     // operand - vs2
     get_vreg(id_src2->reg, idx, s0, vtype->vsew+narrow, vtype->vlmul, is_signed, 1);
-     if(is_signed) rtl_sext(s, s0, s0, 1 << vtype->vsew);
+     if(is_signed) rtl_sext(s, s0, s0, 1 << (vtype->vsew+narrow));
 
     // operand - s1 / rs1 / imm
     switch (s->src_vmode) {
