@@ -18,7 +18,6 @@
 #define __ISA_RISCV64_H__
 
 #include <common.h>
-#define CONFIG_RVV_010 1
 #ifdef CONFIG_RVV_010
 #include "../instr/rvv/vreg.h"
 #endif // CONFIG_RVV_010
