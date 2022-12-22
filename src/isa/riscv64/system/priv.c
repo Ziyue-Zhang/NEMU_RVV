@@ -25,6 +25,7 @@ int update_mmu_state();
 uint64_t clint_uptime();
 void fp_set_dirty();
 void fp_update_rm_cache(uint32_t rm);
+void vp_set_dirty();
 
 rtlreg_t csr_array[4096] = {};
 
@@ -190,7 +191,7 @@ static inline word_t csr_read(word_t *src) {
   else if (is_read(stvec))  { return stvec->val & ~(0x2UL); }
   else if (is_read(sip))    { difftest_skip_ref(); return mip->val & SIP_MASK; }
 #ifdef CONFIG_RVV_010
-  else if (is_read(vcsr))   { mstatus->vs = 3; return (vxrm->val & 0x3) << 1 | (vxsat->val & 0x1); }
+  else if (is_read(vcsr))   { return (vxrm->val & 0x3) << 1 | (vxsat->val & 0x1); }
 #endif
   else if (is_read(fcsr))   {
 #ifdef CONFIG_FPU_NONE
@@ -250,7 +251,7 @@ static inline void csr_write(word_t *dest, word_t src) {
   else if (is_write(medeleg)) { *dest = src & 0xb3ff; }
   else if (is_write(mideleg)) { *dest = src & 0x222; }
 #ifdef CONFIG_RVV_010
-  else if (is_write(vcsr)) { mstatus->vs = 3; vxrm->val = (src >> 1) & 0x3; vxsat->val = src & 0x1; }
+  else if (is_write(vcsr)) { vxrm->val = (src >> 1) & 0x3; vxsat->val = src & 0x1; }
 #endif
 #ifdef CONFIG_MISA_UNCHANGEABLE
   else if (is_write(misa)) { /* do nothing */ }
@@ -379,6 +380,11 @@ static inline void csr_write(word_t *dest, word_t src) {
       is_write(mie) || is_write(sie) || is_write(mip) || is_write(sip)) {
     set_sys_state_flag(SYS_STATE_UPDATE);
   }
+#ifdef CONFIG_RVV_010
+  if (is_write(vcsr) || is_write(vstart) || is_write(vxsat) || is_write(vxrm)) {
+    vp_set_dirty();
+  }
+#endif
 }
 
 word_t csrid_read(uint32_t csrid) {

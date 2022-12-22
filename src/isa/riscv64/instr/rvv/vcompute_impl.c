@@ -28,7 +28,6 @@
 #define s3    (&tmp_reg[3])
 
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
-  vp_set_dirty();
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -279,7 +278,6 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
 
 void mask_instr(int opcode, Decode *s) {
-  vp_set_dirty();
   int idx;
   for(idx = vstart->val; idx < vl->val; idx++) {
     // operand - vs2
@@ -315,7 +313,6 @@ void mask_instr(int opcode, Decode *s) {
 
 
 void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
-  vp_set_dirty();
   // TODO: check here: does not need align??
   get_vreg(id_src->reg, 0, s1, vtype->vsew+wide, vtype->vlmul, is_signed, 1);
   if(is_signed) rtl_sext(s, s1, s1, 1 << (vtype->vsew+wide));
