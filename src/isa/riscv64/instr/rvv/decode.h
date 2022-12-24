@@ -26,7 +26,7 @@ static inline def_DHelper(OP_V) { // 10_101, same to R
 }
 
 static inline def_DHelper(vsetvl) {
-  vp_set_dirty();
+  //vp_set_dirty();
   uint8_t op = s->isa.instr.v_opv4.v_bigbit;
   switch (op){
     case 0b00:
