@@ -30,9 +30,11 @@
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
+  uint64_t carry;
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    carry = mask;
     if(s->vm == 0) {
       // merge instr will exec no matter mask or not
       // masked and mask off exec will left dest unmodified.
@@ -92,38 +94,18 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         rtl_li(s, s2, mask);
         rtl_sub(s, s1, s1, s2); break;
       case MADC:
-        if ((int64_t)*s1 >= 0 && (int64_t)*s0 >= 0) {
-            int64_t tmp = (int64_t)*s0 + (int64_t)*s1 + mask;
-            if (tmp < 0) {
-                rtl_li(s, s1, 1);
-            } else {
-                rtl_li(s, s1, 0);
-            }
-        } else {
-            int64_t tmp = (int64_t)*s0 + (int64_t)*s1 + mask;
-            if (tmp >= 0) {
-                rtl_li(s, s1, 1);
-            } else {
-                rtl_li(s, s1, 0);
-            }
+        for (int i = 0; i < (8 << vtype->vsew); i++) {
+            carry = (((*s0 >> i) & 1) + ((*s1 >> i) & 1) + carry) >> 1;
+            carry &= 1;
         }
+        rtl_li(s, s1, carry);
         break;
       case MSBC:
-        if ((int64_t)*s0 >= 0 && (int64_t)*s1 >= 0) {
-            int64_t tmp = (int64_t)*s0 - (int64_t)*s1 - mask;
-            if (tmp < 0) {
-                rtl_li(s, s1, 1);
-            } else {
-                rtl_li(s, s1, 0);
-            }
-        } else {
-            int64_t tmp = (int64_t)*s0 - (int64_t)*s1 - mask;
-            if (tmp >= 0) {
-                rtl_li(s, s1, 1);
-            } else {
-                rtl_li(s, s1, 0);
-            }
+        for (int i = 0; i < (8 << vtype->vsew); i++) {
+          carry = ((~(*s0 >> i) & 1) + ((*s1 >> i) & 1) + carry) >> 1;
+          carry &= 1;
         }
+        rtl_li(s, s1, carry);
         break;
       case SLL :
         rtl_andi(s, s1, s1, s->v_width*8-1); //low lg2(SEW) is valid

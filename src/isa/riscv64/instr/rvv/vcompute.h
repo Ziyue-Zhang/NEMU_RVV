@@ -106,7 +106,7 @@ def_EHelper(vadc) {
 }
 
 def_EHelper(vmadc) {
-  ARTHI_MASK(MADC, SIGNED)
+  ARTHI_MASK(MADC, UNSIGNED)
 }
 
 def_EHelper(vsbc) {
@@ -114,7 +114,7 @@ def_EHelper(vsbc) {
 }
 
 def_EHelper(vmsbc) {
-  ARTHI_MASK(MSBC, SIGNED)
+  ARTHI_MASK(MSBC, UNSIGNED)
 }
 
 def_EHelper(vmerge) {
