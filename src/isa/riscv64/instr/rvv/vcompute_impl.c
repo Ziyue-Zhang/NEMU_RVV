@@ -27,6 +27,28 @@
 #define s2    (&tmp_reg[2])
 #define s3    (&tmp_reg[3])
 
+int64_t int_rounding(int xrm, int gb) {
+    const uint64_t lsb = 1UL << (gb);
+    const uint64_t lsb_half = lsb >> 1;
+    uint64_t result;
+    switch (xrm) {
+        case RNU :
+            result += lsb_half;
+            break;
+        case RNE :
+            if ((result & lsb_half) && ((result & (lsb_half - 1)) || (result & lsb)))
+                result += lsb;
+            break;
+        case RDN :
+            break;
+        case ROD :
+            if (result & (lsb - 1))
+                result |= lsb;
+            break;
+    }
+    return result;
+}
+
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
@@ -64,6 +86,12 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case SRC_VX :   
         rtl_lr(s, &(id_src->val), id_src1->reg, 4);
         rtl_mv(s, s1, &id_src->val); 
+        switch (vtype->vsew) {
+          case 0 : *s1 = *s1 & 0xff; break;
+          case 1 : *s1 = *s1 & 0xffff; break;
+          case 2 : *s1 = *s1 & 0xffffffff; break;
+          case 3 : *s1 = *s1 & 0xffffffffffffffff; break;
+        }
         if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
         break;
       case SRC_VI :

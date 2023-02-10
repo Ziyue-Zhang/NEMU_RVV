@@ -30,6 +30,11 @@
 #define VENUM8  (VLEN/8)
 #define SLEN 256
 
+#define RNU 0
+#define RNE 1
+#define RDN 2
+#define ROD 3
+
 static inline int check_reg_index1(int index) {
   assert(index >= 0 && index < 32);
   return index;
