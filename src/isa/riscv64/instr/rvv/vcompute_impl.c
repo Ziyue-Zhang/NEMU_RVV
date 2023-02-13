@@ -286,6 +286,54 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
   vcsr_write(IDXVSTART, s0);
 }
 
+void floating_arthimetic_instr(int opcode, Decode *s) {
+  int idx;
+  for(idx = vstart->val; idx < vl->val; idx ++) {
+    // mask
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0) {
+      // merge instr will exec no matter mask or not
+      // masked and mask off exec will left dest unmodified.
+      if(opcode != FMERGE \
+        && mask==0) continue;
+
+    } else {
+      if(opcode == FMERGE) {
+        mask = 1; // merge(mv) get the first operand (s1, rs1, vs2);
+      }
+    }
+
+    // operand - vs2
+    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
+
+    // operand - s1 / rs1 / imm
+    switch (s->src_vmode) {
+      case SRC_VV : 
+        get_vreg(id_src->reg, idx, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
+      case SRC_VF :   
+        rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
+        switch (vtype->vsew) {
+          case 0 : *s1 = *s1 & 0xff; break;
+          case 1 : *s1 = *s1 & 0xffff; break;
+          case 2 : *s1 = *s1 & 0xffffffff; break;
+          case 3 : *s1 = *s1 & 0xffffffffffffffff; break;
+        }
+        break;
+    }
+
+    // op
+    switch (opcode) {
+      case FMERGE : rtl_mux(s, s1, &mask, s1, s0); break;
+    }
+
+    set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+  }
+
+  // TODO: the idx larger than vl need reset to zero.
+  rtl_li(s, s0, 0);
+  vcsr_write(IDXVSTART, s0);
+}
 
 void mask_instr(int opcode, Decode *s) {
   int idx;

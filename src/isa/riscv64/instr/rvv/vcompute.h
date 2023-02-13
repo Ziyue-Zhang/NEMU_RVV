@@ -786,13 +786,16 @@ def_EHelper(vfslide1down) {
 }
 
 def_EHelper(vfmvfs) {
-  print_asm_template3(vfmvfs);
-  longjmp_raise_intr(EX_II);
+  get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
+  if (vtype->vsew < 3) {
+      *s0 = *s0 | (UINT64_MAX << (8 << vtype->vsew));
+  }
+  rtl_mv(s, &fpreg_l(id_dest->reg), s0);
 }
 
 def_EHelper(vfmvsf) {
-  print_asm_template3(vfmvsf);
-  longjmp_raise_intr(EX_II);
+  rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
+  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
 }
 
 def_EHelper(vfcvt_xufv) {
@@ -921,8 +924,7 @@ def_EHelper(vfclass_v) {
 }
 
 def_EHelper(vfmerge) {
-  print_asm_template3(vfmerge);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FMERGE)
 }
 
 def_EHelper(vmfeq) {
