@@ -720,5 +720,354 @@ def_EHelper(vwmaccus) {
   ARTHI_WIDE(MACCUS, UNSIGNED)
 }
 
+def_EHelper(vfadd) {
+  print_asm_template3(vfadd);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfredusum) {
+  print_asm_template3(vfredusum);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfsub) {
+  print_asm_template3(vfsub);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfredosum) {
+  print_asm_template3(vfredosum);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmin) {
+  print_asm_template3(vfmin);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfredmin) {
+  print_asm_template3(vfredmin);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmax) {
+  print_asm_template3(vfmax);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfredmax) {
+  print_asm_template3(vfredmax);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfsgnj) {
+  print_asm_template3(vfsgnj);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfsgnjn) {
+  print_asm_template3(vfsgnjn);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfsgnjx) {
+  print_asm_template3(vfsgnjx);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfslide1up) {
+  print_asm_template3(vfslide1up);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfslide1down) {
+  print_asm_template3(vfslide1down);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmvfs) {
+  print_asm_template3(vfmvfs);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmvsf) {
+  print_asm_template3(vfmvsf);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_xufv) {
+  print_asm_template3(vfcvt_xufv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_xfv) {
+  print_asm_template3(vfcvt_xfv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_fxuv) {
+  print_asm_template3(vfcvt_fxuv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_fxv) {
+  print_asm_template3(vfcvt_fxv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_rtz_xufv) {
+  print_asm_template3(vfcvt_rtz_xufv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfcvt_rtz_xfv) {
+  print_asm_template3(vfcvt_rtz_xfv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_xufv) {
+  print_asm_template3(vfwcvt_xufv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_xfv) {
+  print_asm_template3(vfwcvt_xfv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_fxuv) {
+  print_asm_template3(vfwcvt_fxuv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_fxv) {
+  print_asm_template3(vfwcvt_fxv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_ffv) {
+  print_asm_template3(vfwcvt_ffv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_rtz_xufv) {
+  print_asm_template3(vfwcvt_rtz_xufv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwcvt_rtz_xfv) {
+  print_asm_template3(vfwcvt_rtz_xfv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_xufw) {
+  print_asm_template3(vfncvt_xufw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_xfw) {
+  print_asm_template3(vfncvt_xfw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_fxuw) {
+  print_asm_template3(vfncvt_fxuw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_fxw) {
+  print_asm_template3(vfncvt_fxw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_ffw) {
+  print_asm_template3(vfncvt_ffw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_rod_ffw) {
+  print_asm_template3(vfncvt_rod_ffw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_rtz_xufw) {
+  print_asm_template3(vfncvt_rtz_xufw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfncvt_rtz_xfw) {
+  print_asm_template3(vfncvt_rtz_xfw);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfsqrt_v) {
+  print_asm_template3(vfsqrt_v);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfrsqrt7_v) {
+  print_asm_template3(vfrsqrt7_v);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfrec7_v) {
+  print_asm_template3(vfrec7_v);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfclass_v) {
+  print_asm_template3(vfclass_v);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmerge) {
+  print_asm_template3(vfmerge);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmfeq) {
+  print_asm_template3(vmfeq);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmfle) {
+  print_asm_template3(vmfle);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmflt) {
+  print_asm_template3(vmflt);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmfne) {
+  print_asm_template3(vmfne);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmfgt) {
+  print_asm_template3(vmfgt);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vmfge) {
+  print_asm_template3(vmfge);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfdiv) {
+  print_asm_template3(vfdiv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfrdiv) {
+  print_asm_template3(vfrdiv);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmul) {
+  print_asm_template3(vfmul);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfrsub) {
+  print_asm_template3(vfrsub);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmadd) {
+  print_asm_template3(vfmadd);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfnmadd) {
+  print_asm_template3(vfnmadd);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmsub) {
+  print_asm_template3(vfmsub);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfnmsub) {
+  print_asm_template3(vfnmsub);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmacc) {
+  print_asm_template3(vfmacc);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfnmacc) {
+  print_asm_template3(vfnmacc);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfmsac) {
+  print_asm_template3(vfmsac);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfnmsac) {
+  print_asm_template3(vfnmsac);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwadd) {
+  print_asm_template3(vfwadd);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwredusum) {
+  print_asm_template3(vfwredusum);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwsub) {
+  print_asm_template3(vfwsub);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwredosum) {
+  print_asm_template3(vfwredosum);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwadd_w) {
+  print_asm_template3(vfwadd_w);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwsub_w) {
+  print_asm_template3(vfwsub_w);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwmul) {
+  print_asm_template3(vfwmul);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwmacc) {
+  print_asm_template3(vfwmacc);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwnmacc) {
+  print_asm_template3(vfwnmacc);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwmsac) {
+  print_asm_template3(vfwmsac);
+  longjmp_raise_intr(EX_II);
+}
+
+def_EHelper(vfwnmsac) {
+  print_asm_template3(vfwnmsac);
+  longjmp_raise_intr(EX_II);
+}
 
 #endif // CONFIG_RVV

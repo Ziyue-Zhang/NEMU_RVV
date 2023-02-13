@@ -73,6 +73,7 @@ void longjmp_raise_intr(uint32_t foo);
 #define SRC_VV  0
 #define SRC_VI  1
 #define SRC_VX  2
+#define SRC_VF  3
 #define UNSIGNED     0
 #define SIGNED       1
 
