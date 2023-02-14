@@ -325,6 +325,12 @@ void floating_arthimetic_instr(int opcode, Decode *s) {
     // op
     switch (opcode) {
       case FMERGE : rtl_mux(s, s1, &mask, s1, s0); break;
+      case FSLIDE1UP :
+        if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
+      case FSLIDE1DOWN :
+        if (idx < vl->val - 1) get_vreg(id_src2->reg, idx + 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        break;
     }
 
     set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);

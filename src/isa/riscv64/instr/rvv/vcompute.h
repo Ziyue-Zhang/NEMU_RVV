@@ -776,13 +776,11 @@ def_EHelper(vfsgnjx) {
 }
 
 def_EHelper(vfslide1up) {
-  print_asm_template3(vfslide1up);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSLIDE1UP)
 }
 
 def_EHelper(vfslide1down) {
-  print_asm_template3(vfslide1down);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSLIDE1DOWN)
 }
 
 def_EHelper(vfmvfs) {
