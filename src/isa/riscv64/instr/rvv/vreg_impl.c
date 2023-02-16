@@ -125,6 +125,12 @@ void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul
   }
 }
 
+void set_vreg_tail(uint64_t reg) {
+  for (int i = 0; i < VLEN / 64; i++) {
+    vreg_l(reg, i) = 0xffffffffffffffff;
+  }
+}
+
 void longjmp_raise_intr(uint32_t foo) {
     assert(0);
 }

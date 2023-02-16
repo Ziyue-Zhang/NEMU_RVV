@@ -721,8 +721,7 @@ def_EHelper(vwmaccus) {
 }
 
 def_EHelper(vfadd) {
-  print_asm_template3(vfadd);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FADD)
 }
 
 def_EHelper(vfredusum) {
@@ -792,6 +791,7 @@ def_EHelper(vfmvfs) {
 }
 
 def_EHelper(vfmvsf) {
+  set_vreg_tail(id_dest->reg);
   rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
 }

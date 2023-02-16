@@ -5,11 +5,26 @@
 #include <specialize.h>
 #include <internals.h>
 
+#define F16_SIGN ((uint64_t)1ul << 15)
 #define F32_SIGN ((uint64_t)1ul << 31)
 #define F64_SIGN ((uint64_t)1ul << 63)
 
+static inline float16_t rtlToF16(rtlreg_t r);
 static inline float32_t rtlToF32(rtlreg_t r);
+static inline float32_t rtlToVF32(rtlreg_t r);
 static inline float64_t rtlToF64(rtlreg_t r);
+
+static inline float16_t f16_min(float16_t a, float16_t b){
+  bool less = f16_lt_quiet(a, b) || (f16_eq(a, b) && (a.v & F16_SIGN));
+  if(isNaNF16UI(a.v) && isNaNF16UI(b.v)) return rtlToF16(defaultNaNF16UI);
+  else return(less || isNaNF16UI(b.v) ? a : b);
+}
+
+static inline float16_t f16_max(float16_t a, float16_t b){
+  bool greater = f16_lt_quiet(b, a) || (f16_eq(b, a) && (b.v & F16_SIGN));
+  if(isNaNF16UI(a.v) && isNaNF16UI(b.v)) return rtlToF16(defaultNaNF16UI);
+  else return(greater || isNaNF16UI(b.v) ? a : b);
+}
 
 static inline float32_t f32_min(float32_t a, float32_t b){
   bool less = f32_lt_quiet(a, b) || (f32_eq(a, b) && (a.v & F32_SIGN));

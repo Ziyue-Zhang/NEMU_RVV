@@ -288,6 +288,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
 void floating_arthimetic_instr(int opcode, Decode *s) {
   int idx;
+  word_t FPCALL_TYPE; 
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
@@ -322,8 +323,22 @@ void floating_arthimetic_instr(int opcode, Decode *s) {
         break;
     }
 
+    // fpcall type
+    switch (vtype->vsew) {
+      case 0 : panic("f8 not supported"); break;
+      case 1 : FPCALL_TYPE = FPCALL_W16; break;
+      case 2 : FPCALL_TYPE = FPCALL_W32; break;
+      case 3 : FPCALL_TYPE = FPCALL_W64; break;
+    }
+
     // op
     switch (opcode) {
+      case FADD : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
+      case FSUB : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_SUB, FPCALL_TYPE)); break;
+      case FMUL : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MUL, FPCALL_TYPE)); break;
+      case FDIV : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DIV, FPCALL_TYPE)); break;
+      case FMIN : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MIN, FPCALL_TYPE)); break;
+      case FMAX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MAX, FPCALL_TYPE)); break;
       case FMERGE : rtl_mux(s, s1, &mask, s1, s0); break;
       case FSLIDE1UP :
         if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
