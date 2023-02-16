@@ -791,7 +791,7 @@ def_EHelper(vfmvfs) {
 }
 
 def_EHelper(vfmvsf) {
-  set_vreg_tail(id_dest->reg);
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
   rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
 }
