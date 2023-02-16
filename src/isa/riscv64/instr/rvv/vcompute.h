@@ -730,8 +730,7 @@ def_EHelper(vfredusum) {
 }
 
 def_EHelper(vfsub) {
-  print_asm_template3(vfsub);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSUB)
 }
 
 def_EHelper(vfredosum) {
@@ -971,8 +970,7 @@ def_EHelper(vfmul) {
 }
 
 def_EHelper(vfrsub) {
-  print_asm_template3(vfrsub);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FRSUB)
 }
 
 def_EHelper(vfmadd) {
@@ -1016,8 +1014,7 @@ def_EHelper(vfnmsac) {
 }
 
 def_EHelper(vfwadd) {
-  print_asm_template3(vfwadd);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FADD)
 }
 
 def_EHelper(vfwredusum) {
@@ -1026,8 +1023,7 @@ def_EHelper(vfwredusum) {
 }
 
 def_EHelper(vfwsub) {
-  print_asm_template3(vfwsub);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FSUB)
 }
 
 def_EHelper(vfwredosum) {
