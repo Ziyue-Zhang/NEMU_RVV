@@ -14,6 +14,18 @@ static inline float32_t rtlToF32(rtlreg_t r);
 static inline float32_t rtlToVF32(rtlreg_t r);
 static inline float64_t rtlToF64(rtlreg_t r);
 
+static inline float16_t f16_neg(float16_t a) {
+  return (float16_t){.v = a.v ^ F16_SIGN};
+}
+
+static inline float32_t f32_neg(float32_t a) {
+  return (float32_t){.v = a.v ^ F32_SIGN};
+}
+
+static inline float64_t f64_neg(float64_t a) {
+  return (float64_t){.v = a.v ^ F64_SIGN};
+}
+
 static inline float16_t f16_min(float16_t a, float16_t b){
   bool less = f16_lt_quiet(a, b) || (f16_eq(a, b) && (a.v & F16_SIGN));
   if(isNaNF16UI(a.v) && isNaNF16UI(b.v)) return rtlToF16(defaultNaNF16UI);
