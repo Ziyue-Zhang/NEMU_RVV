@@ -167,6 +167,7 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_NMACC: *dest = f16_mulAdd(f16_neg(fsrc2), fsrc1, f16_neg(rtlToF16(*dest))).v; break;
       case FPCALL_MSAC: *dest = f16_mulAdd(fsrc1, fsrc2, f16_neg(rtlToF16(*dest))).v; break;
       case FPCALL_NMSAC: *dest = f16_mulAdd(f16_neg(fsrc1), fsrc2, rtlToF16(*dest)).v; break;
+      
       case FPCALL_LE: *dest = f16_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f16_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f16_eq(fsrc1, fsrc2); break;
@@ -186,7 +187,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
 
       case FPCALL_SQRT: *dest = f32_sqrt(fsrc1).v; break;
 
-      case FPCALL_MADD: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToF32(*dest)).v; break;
+      case FPCALL_MADD: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, fsrc2).v; break;
+      case FPCALL_NMADD: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_MSUB: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_NMSUB: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, fsrc2).v; break;
+      case FPCALL_MACC: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToF32(*dest)).v; break;
+      case FPCALL_NMACC: *dest = f32_mulAdd(f32_neg(fsrc2), fsrc1, f32_neg(rtlToF32(*dest))).v; break;
+      case FPCALL_MSAC: *dest = f32_mulAdd(fsrc1, fsrc2, f32_neg(rtlToF32(*dest))).v; break;
+      case FPCALL_NMSAC: *dest = f32_mulAdd(f32_neg(fsrc1), fsrc2, rtlToF32(*dest)).v; break;
 
       case FPCALL_LE: *dest = f32_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f32_lt(fsrc1, fsrc2); break;
@@ -216,7 +224,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
 
       case FPCALL_SQRT: *dest = f32_sqrt(fsrc1).v; break;
 
-      case FPCALL_MADD: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToF32(*dest)).v; break;
+      case FPCALL_MADD: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, fsrc2).v; break;
+      case FPCALL_NMADD: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_MSUB: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_NMSUB: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, fsrc2).v; break;
+      case FPCALL_MACC: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToF32(*dest)).v; break;
+      case FPCALL_NMACC: *dest = f32_mulAdd(f32_neg(fsrc2), fsrc1, f32_neg(rtlToF32(*dest))).v; break;
+      case FPCALL_MSAC: *dest = f32_mulAdd(fsrc1, fsrc2, f32_neg(rtlToF32(*dest))).v; break;
+      case FPCALL_NMSAC: *dest = f32_mulAdd(f32_neg(fsrc1), fsrc2, rtlToF32(*dest)).v; break;
 
       case FPCALL_LE: *dest = f32_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f32_lt(fsrc1, fsrc2); break;
@@ -246,7 +261,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
 
       case FPCALL_SQRT: *dest = f64_sqrt(fsrc1).v; break;
 
-      case FPCALL_MADD: *dest = f64_mulAdd(fsrc1, fsrc2, rtlToF64(*dest)).v; break;
+      case FPCALL_MADD: *dest = f64_mulAdd(rtlToF64(*dest), fsrc1, fsrc2).v; break;
+      case FPCALL_NMADD: *dest = f64_mulAdd(f64_neg(rtlToF64(*dest)), fsrc1, f64_neg(fsrc2)).v; break;
+      case FPCALL_MSUB: *dest = f64_mulAdd(rtlToF64(*dest), fsrc1, f64_neg(fsrc2)).v; break;
+      case FPCALL_NMSUB: *dest = f64_mulAdd(f64_neg(rtlToF64(*dest)), fsrc1, fsrc2).v; break;
+      case FPCALL_MACC: *dest = f64_mulAdd(fsrc1, fsrc2, rtlToF64(*dest)).v; break;
+      case FPCALL_NMACC: *dest = f64_mulAdd(f64_neg(fsrc2), fsrc1, f64_neg(rtlToF64(*dest))).v; break;
+      case FPCALL_MSAC: *dest = f64_mulAdd(fsrc1, fsrc2, f64_neg(rtlToF64(*dest))).v; break;
+      case FPCALL_NMSAC: *dest = f64_mulAdd(f64_neg(fsrc1), fsrc2, rtlToF64(*dest)).v; break;
 
       case FPCALL_LE: *dest = f64_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f64_lt(fsrc1, fsrc2); break;
@@ -279,7 +301,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
 
       case FPCALL_SQRT: *dest = f64_sqrt(fsrc1).v; break;
 
-      case FPCALL_MADD: *dest = f64_mulAdd(fsrc1, fsrc2, rtlToF64(*dest)).v; break;
+      case FPCALL_MADD: *dest = f64_mulAdd(rtlToF64(*dest), fsrc1, fsrc2).v; break;
+      case FPCALL_NMADD: *dest = f64_mulAdd(f64_neg(rtlToF64(*dest)), fsrc1, f64_neg(fsrc2)).v; break;
+      case FPCALL_MSUB: *dest = f64_mulAdd(rtlToF64(*dest), fsrc1, f64_neg(fsrc2)).v; break;
+      case FPCALL_NMSUB: *dest = f64_mulAdd(f64_neg(rtlToF64(*dest)), fsrc1, fsrc2).v; break;
+      case FPCALL_MACC: *dest = f64_mulAdd(fsrc1, fsrc2, rtlToF64(*dest)).v; break;
+      case FPCALL_NMACC: *dest = f64_mulAdd(f64_neg(fsrc2), fsrc1, f64_neg(rtlToF64(*dest))).v; break;
+      case FPCALL_MSAC: *dest = f64_mulAdd(fsrc1, fsrc2, f64_neg(rtlToF64(*dest))).v; break;
+      case FPCALL_NMSAC: *dest = f64_mulAdd(f64_neg(fsrc1), fsrc2, rtlToF64(*dest)).v; break;
 
       case FPCALL_LE: *dest = f64_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f64_lt(fsrc1, fsrc2); break;

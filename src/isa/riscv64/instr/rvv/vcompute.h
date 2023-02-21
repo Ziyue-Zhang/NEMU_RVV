@@ -1035,23 +1035,19 @@ def_EHelper(vfwmul) {
 }
 
 def_EHelper(vfwmacc) {
-  print_asm_template3(vfwmacc);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FMACC)
 }
 
 def_EHelper(vfwnmacc) {
-  print_asm_template3(vfwnmacc);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FNMACC)
 }
 
 def_EHelper(vfwmsac) {
-  print_asm_template3(vfwmsac);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FMSAC)
 }
 
 def_EHelper(vfwnmsac) {
-  print_asm_template3(vfwnmsac);
-  longjmp_raise_intr(EX_II);
+  FLOAT_WIDE(FNMSAC)
 }
 
 #endif // CONFIG_RVV
