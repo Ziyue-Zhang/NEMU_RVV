@@ -205,14 +205,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_REC7: *dest = f32_recip7(fsrc1).v; break;
       case FPCALL_CLASS: *dest = f32_classify(fsrc1); break;
 
-      case FPCALL_MADD: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, fsrc2).v; break;
-      case FPCALL_NMADD: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, f32_neg(fsrc2)).v; break;
-      case FPCALL_MSUB: *dest = f32_mulAdd(rtlToF32(*dest), fsrc1, f32_neg(fsrc2)).v; break;
-      case FPCALL_NMSUB: *dest = f32_mulAdd(f32_neg(rtlToF32(*dest)), fsrc1, fsrc2).v; break;
-      case FPCALL_MACC: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToF32(*dest)).v; break;
-      case FPCALL_NMACC: *dest = f32_mulAdd(f32_neg(fsrc2), fsrc1, f32_neg(rtlToF32(*dest))).v; break;
-      case FPCALL_MSAC: *dest = f32_mulAdd(fsrc1, fsrc2, f32_neg(rtlToF32(*dest))).v; break;
-      case FPCALL_NMSAC: *dest = f32_mulAdd(f32_neg(fsrc1), fsrc2, rtlToF32(*dest)).v; break;
+      case FPCALL_MADD: *dest = f32_mulAdd(rtlToVF32(*dest), fsrc1, fsrc2).v; break;
+      case FPCALL_NMADD: *dest = f32_mulAdd(f32_neg(rtlToVF32(*dest)), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_MSUB: *dest = f32_mulAdd(rtlToVF32(*dest), fsrc1, f32_neg(fsrc2)).v; break;
+      case FPCALL_NMSUB: *dest = f32_mulAdd(f32_neg(rtlToVF32(*dest)), fsrc1, fsrc2).v; break;
+      case FPCALL_MACC: *dest = f32_mulAdd(fsrc1, fsrc2, rtlToVF32(*dest)).v; break;
+      case FPCALL_NMACC: *dest = f32_mulAdd(f32_neg(fsrc2), fsrc1, f32_neg(rtlToVF32(*dest))).v; break;
+      case FPCALL_MSAC: *dest = f32_mulAdd(fsrc1, fsrc2, f32_neg(rtlToVF32(*dest))).v; break;
+      case FPCALL_NMSAC: *dest = f32_mulAdd(f32_neg(fsrc1), fsrc2, rtlToVF32(*dest)).v; break;
 
       case FPCALL_LE: *dest = f32_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f32_lt(fsrc1, fsrc2); break;
@@ -283,7 +283,7 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_FToI64: *dest = my_f64_to_i64 (fsrc1); break;
       case FPCALL_FToU64: *dest = my_f64_to_ui64(fsrc1); break;
 
-      case FPCALL_F32ToF64: *dest = f32_to_f64(rtlToF32(*src1)).v; break;
+      case FPCALL_F32ToF64: *dest = f32_to_f64(rtlToVF32(*src1)).v; break;
       case FPCALL_F64ToF32: *dest = f64_to_f32(fsrc1).v; break;
       default: panic("op = %d not supported", op);
     } 
