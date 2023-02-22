@@ -76,9 +76,9 @@ enum {
   FPCALL_MIN,
   FPCALL_LE,
   FPCALL_EQ,
-  FPCALL_NE,
   FPCALL_LT,
   FPCALL_GE,
+  FPCALL_NE,
   FPCALL_GT
 };
 

@@ -171,6 +171,9 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_LE: *dest = f16_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f16_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f16_eq(fsrc1, fsrc2); break;
+      case FPCALL_GE: *dest = f16_le(fsrc2, fsrc1); break;
+      case FPCALL_GT: *dest = f16_lt(fsrc2, fsrc1); break;
+      case FPCALL_NE: *dest = !f16_eq(fsrc1, fsrc2); break;
 
       default: panic("op = %d not supported", op);
     }
@@ -199,6 +202,9 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_LE: *dest = f32_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f32_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f32_eq(fsrc1, fsrc2); break;
+      case FPCALL_GE: *dest = f32_le(fsrc2, fsrc1); break;
+      case FPCALL_GT: *dest = f32_lt(fsrc2, fsrc1); break;
+      case FPCALL_NE: *dest = !f32_eq(fsrc1, fsrc2); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f32 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f32(*src1).v; break;
@@ -236,6 +242,9 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_LE: *dest = f32_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f32_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f32_eq(fsrc1, fsrc2); break;
+      case FPCALL_GE: *dest = f32_le(fsrc2, fsrc1); break;
+      case FPCALL_GT: *dest = f32_lt(fsrc2, fsrc1); break;
+      case FPCALL_NE: *dest = !f32_eq(fsrc1, fsrc2); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f32 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f32(*src1).v; break;
@@ -273,6 +282,9 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_LE: *dest = f64_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f64_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f64_eq(fsrc1, fsrc2); break;
+      case FPCALL_GE: *dest = f64_le(fsrc2, fsrc1); break;
+      case FPCALL_GT: *dest = f64_lt(fsrc2, fsrc1); break;
+      case FPCALL_NE: *dest = !f64_eq(fsrc1, fsrc2); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f64 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f64(*src1).v; break;
@@ -313,6 +325,9 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_LE: *dest = f64_le(fsrc1, fsrc2); break;
       case FPCALL_LT: *dest = f64_lt(fsrc1, fsrc2); break;
       case FPCALL_EQ: *dest = f64_eq(fsrc1, fsrc2); break;
+      case FPCALL_GE: *dest = f64_le(fsrc2, fsrc1); break;
+      case FPCALL_GT: *dest = f64_lt(fsrc2, fsrc1); break;
+      case FPCALL_NE: *dest = !f64_eq(fsrc1, fsrc2); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f64 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f64(*src1).v; break;

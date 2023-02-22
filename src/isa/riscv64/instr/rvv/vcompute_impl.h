@@ -64,7 +64,7 @@ enum op_t {
 
 void vp_set_dirty();
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s);
-void floating_arthimetic_instr(int opcode, Decode *s, int widening);
+void floating_arthimetic_instr(int opcode, int widening, int dest_mask, Decode *s);
 void mask_instr(int opcode, Decode *s);
 void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 
@@ -73,8 +73,9 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 #define ARTHI_MASK(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, 1, s);
 #define ARTHI_NARROW(opcode, is_signed, narrow) arthimetic_instr(opcode, is_signed, 0, narrow, 0, s);
 
-#define FLOAT_ARTHI(opcode) floating_arthimetic_instr(opcode, s, 0);
-#define FLOAT_WIDE(opcode) floating_arthimetic_instr(opcode, s, 1);
+#define FLOAT_ARTHI(opcode) floating_arthimetic_instr(opcode, 0, 0, s);
+#define FLOAT_ARTHI_WIDE(opcode) floating_arthimetic_instr(opcode, 1, 0, s);
+#define FLOAT_ARTHI_MASK(opcode) floating_arthimetic_instr(opcode, 0, 1, s);
 
 #define MASKINSTR(opcode) mask_instr(opcode, s);
 

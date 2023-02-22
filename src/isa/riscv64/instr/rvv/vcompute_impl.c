@@ -286,7 +286,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
   vcsr_write(IDXVSTART, s0);
 }
 
-void floating_arthimetic_instr(int opcode, Decode *s, int widening) {
+void floating_arthimetic_instr(int opcode, int widening, int dest_mask, Decode *s) {
   int idx;
   word_t FPCALL_TYPE; 
   for(idx = vstart->val; idx < vl->val; idx ++) {
@@ -331,6 +331,19 @@ void floating_arthimetic_instr(int opcode, Decode *s, int widening) {
       case 3 : FPCALL_TYPE = FPCALL_W64; break;
     }
 
+    switch (opcode) {
+      case FMACC :
+      case FNMACC :
+      case FMSAC :
+      case FNMSAC :
+      case FMADD :
+      case FNMADD :
+      case FMSUB : 
+      case FNMSUB :
+        get_vreg(id_dest->reg, idx, s2, vtype->vsew+widening, vtype->vlmul, 0, 1);
+        break;
+    }
+
     // op
     switch (opcode) {
       case FADD : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
@@ -341,15 +354,21 @@ void floating_arthimetic_instr(int opcode, Decode *s, int widening) {
       case FRDIV: rtl_hostcall(s, HOSTCALL_VFP, s1, s1, s0, FPCALL_CMD(FPCALL_DIV, FPCALL_TYPE)); break;
       case FMIN : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MIN, FPCALL_TYPE)); break;
       case FMAX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MAX, FPCALL_TYPE)); break;
-      case FMACC: rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MACC, FPCALL_TYPE)); break;
-      case FNMACC : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_NMACC, FPCALL_TYPE)); break;
-      case FMSAC: rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MSAC, FPCALL_TYPE)); break;
-      case FNMSAC : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_NMSAC, FPCALL_TYPE)); break;
-      case FMADD: rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MADD, FPCALL_TYPE)); break;
-      case FNMADD : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_NMADD, FPCALL_TYPE)); break;
-      case FMSUB: rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MSUB, FPCALL_TYPE)); break;
-      case FNMSUB : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_NMSUB, FPCALL_TYPE)); break;
+      case FMACC : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_MACC, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FNMACC : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_NMACC, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FMSAC : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_MSAC, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FNMSAC : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_NMSAC, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FMADD : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_MADD, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FNMADD : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_NMADD, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FMSUB : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_MSUB, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
+      case FNMSUB : rtl_hostcall(s, HOSTCALL_VFP, s2, s1, s0, FPCALL_CMD(FPCALL_NMSUB, FPCALL_TYPE)); rtl_mv(s, s1, s2); break;
       case FMERGE : rtl_mux(s, s1, &mask, s1, s0); break;
+      case MFEQ : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_EQ, FPCALL_TYPE)); break;
+      case MFNE : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_NE, FPCALL_TYPE)); break;
+      case MFLT : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_LT, FPCALL_TYPE)); break;
+      case MFLE : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_LE, FPCALL_TYPE)); break;
+      case MFGT : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_GT, FPCALL_TYPE)); break;
+      case MFGE : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_GE, FPCALL_TYPE)); break;
       case FSLIDE1UP :
         if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
         break;
@@ -358,7 +377,10 @@ void floating_arthimetic_instr(int opcode, Decode *s, int widening) {
         break;
     }
 
-    set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
+    if(dest_mask == 1) 
+      set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+    else
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
   }
 
   // TODO: the idx larger than vl need reset to zero.
