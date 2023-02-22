@@ -899,23 +899,19 @@ def_EHelper(vfncvt_rtz_xfw) {
 }
 
 def_EHelper(vfsqrt_v) {
-  print_asm_template3(vfsqrt_v);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSQRT)
 }
 
 def_EHelper(vfrsqrt7_v) {
-  print_asm_template3(vfrsqrt7_v);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FRSQRT7)
 }
 
 def_EHelper(vfrec7_v) {
-  print_asm_template3(vfrec7_v);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FREC7)
 }
 
 def_EHelper(vfclass_v) {
-  print_asm_template3(vfclass_v);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCLASS)
 }
 
 def_EHelper(vfmerge) {
