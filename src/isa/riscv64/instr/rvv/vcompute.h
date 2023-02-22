@@ -757,18 +757,15 @@ def_EHelper(vfredmax) {
 }
 
 def_EHelper(vfsgnj) {
-  print_asm_template3(vfsgnj);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSGNJ)
 }
 
 def_EHelper(vfsgnjn) {
-  print_asm_template3(vfsgnjn);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSGNJN)
 }
 
 def_EHelper(vfsgnjx) {
-  print_asm_template3(vfsgnjx);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FSGNJX)
 }
 
 def_EHelper(vfslide1up) {

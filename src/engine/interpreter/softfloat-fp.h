@@ -10,11 +10,11 @@
 #define F64_SIGN ((uint64_t)1ul << 63)
 
 #define fsgnj16(a, b, n, x) \
-  f16((f16(a).v & ~F16_SIGN) | ((((x) ? f16(a).v : (n) ? F16_SIGN : 0) ^ f16(b).v) & F16_SIGN))
+  (uint16_t) ((a.v & ~F16_SIGN) | ((((x) ? a.v : (n) ? F16_SIGN : 0) ^ b.v) & F16_SIGN))
 #define fsgnj32(a, b, n, x) \
-  f32((f32(a).v & ~F32_SIGN) | ((((x) ? f32(a).v : (n) ? F32_SIGN : 0) ^ f32(b).v) & F32_SIGN))
+  (uint32_t) ((a.v & ~F32_SIGN) | ((((x) ? a.v : (n) ? F32_SIGN : 0) ^ b.v) & F32_SIGN))
 #define fsgnj64(a, b, n, x) \
-  f64((f64(a).v & ~F64_SIGN) | ((((x) ? f64(a).v : (n) ? F64_SIGN : 0) ^ f64(b).v) & F64_SIGN))
+  (uint64_t) ((a.v & ~F64_SIGN) | ((((x) ? a.v : (n) ? F64_SIGN : 0) ^ b.v) & F64_SIGN))
 
 static inline float16_t rtlToF16(rtlreg_t r);
 static inline float32_t rtlToF32(rtlreg_t r);

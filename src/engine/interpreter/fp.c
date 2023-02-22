@@ -178,6 +178,10 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_GT: *dest = f16_lt(fsrc2, fsrc1); break;
       case FPCALL_NE: *dest = !f16_eq(fsrc1, fsrc2); break;
 
+      case FPCALL_SGNJ: *dest = fsgnj16(fsrc1, fsrc2, false, false); break;
+      case FPCALL_SGNJN: *dest = fsgnj16(fsrc1, fsrc2, true, false); break;
+      case FPCALL_SGNJX: *dest = fsgnj16(fsrc1, fsrc2, false, true); break;
+
       default: panic("op = %d not supported", op);
     }
   } else if (w == FPCALL_W32 || w == FPCALL_W16_to_32) {
@@ -220,6 +224,10 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_GE: *dest = f32_le(fsrc2, fsrc1); break;
       case FPCALL_GT: *dest = f32_lt(fsrc2, fsrc1); break;
       case FPCALL_NE: *dest = !f32_eq(fsrc1, fsrc2); break;
+
+      case FPCALL_SGNJ: *dest = fsgnj32(fsrc1, fsrc2, false, false); break;
+      case FPCALL_SGNJN: *dest = fsgnj32(fsrc1, fsrc2, true, false); break;
+      case FPCALL_SGNJX: *dest = fsgnj32(fsrc1, fsrc2, false, true); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f32 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f32(*src1).v; break;
@@ -272,6 +280,10 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_GE: *dest = f64_le(fsrc2, fsrc1); break;
       case FPCALL_GT: *dest = f64_lt(fsrc2, fsrc1); break;
       case FPCALL_NE: *dest = !f64_eq(fsrc1, fsrc2); break;
+
+      case FPCALL_SGNJ: *dest = fsgnj64(fsrc1, fsrc2, false, false); break;
+      case FPCALL_SGNJN: *dest = fsgnj64(fsrc1, fsrc2, true, false); break;
+      case FPCALL_SGNJX: *dest = fsgnj64(fsrc1, fsrc2, false, true); break;
 
       case FPCALL_I32ToF: *dest = i32_to_f64 (*src1).v; break;
       case FPCALL_U32ToF: *dest = ui32_to_f64(*src1).v; break;
