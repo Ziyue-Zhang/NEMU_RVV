@@ -104,6 +104,15 @@ enum {
   FPCALL_UToDF,
   FPCALL_SToDF,
   FPCALL_FToDF,
+
+  FPCALL_DFToU,
+  FPCALL_DFToS,
+  FPCALL_DFToUT,
+  FPCALL_DFToST,
+  FPCALL_DUToF,
+  FPCALL_DSToF,
+  FPCALL_DFToF,
+  FPCALL_DFToFR
 };
 
 #define FPCALL_CMD(op, w) (((op) << 16) | (w))

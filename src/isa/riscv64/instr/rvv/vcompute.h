@@ -721,7 +721,7 @@ def_EHelper(vwmaccus) {
 }
 
 def_EHelper(vfadd) {
-  FLOAT_ARTHI(FADD)
+  FLOAT_ARTHI(FADD, UNSIGNED)
 }
 
 def_EHelper(vfredusum) {
@@ -730,7 +730,7 @@ def_EHelper(vfredusum) {
 }
 
 def_EHelper(vfsub) {
-  FLOAT_ARTHI(FSUB)
+  FLOAT_ARTHI(FSUB, UNSIGNED)
 }
 
 def_EHelper(vfredosum) {
@@ -739,7 +739,7 @@ def_EHelper(vfredosum) {
 }
 
 def_EHelper(vfmin) {
-  FLOAT_ARTHI(MIN)
+  FLOAT_ARTHI(MIN, UNSIGNED)
 }
 
 def_EHelper(vfredmin) {
@@ -748,7 +748,7 @@ def_EHelper(vfredmin) {
 }
 
 def_EHelper(vfmax) {
-  FLOAT_ARTHI(MAX)
+  FLOAT_ARTHI(MAX, UNSIGNED)
 }
 
 def_EHelper(vfredmax) {
@@ -757,23 +757,23 @@ def_EHelper(vfredmax) {
 }
 
 def_EHelper(vfsgnj) {
-  FLOAT_ARTHI(FSGNJ)
+  FLOAT_ARTHI(FSGNJ, UNSIGNED)
 }
 
 def_EHelper(vfsgnjn) {
-  FLOAT_ARTHI(FSGNJN)
+  FLOAT_ARTHI(FSGNJN, UNSIGNED)
 }
 
 def_EHelper(vfsgnjx) {
-  FLOAT_ARTHI(FSGNJX)
+  FLOAT_ARTHI(FSGNJX, UNSIGNED)
 }
 
 def_EHelper(vfslide1up) {
-  FLOAT_ARTHI(FSLIDE1UP)
+  FLOAT_ARTHI(FSLIDE1UP, UNSIGNED)
 }
 
 def_EHelper(vfslide1down) {
-  FLOAT_ARTHI(FSLIDE1DOWN)
+  FLOAT_ARTHI(FSLIDE1DOWN, UNSIGNED)
 }
 
 def_EHelper(vfmvfs) {
@@ -791,115 +791,107 @@ def_EHelper(vfmvsf) {
 }
 
 def_EHelper(vfcvt_xufv) {
-  FLOAT_ARTHI(FCVT_XUF)
+  FLOAT_ARTHI(FCVT_XUF, UNSIGNED)
 }
 
 def_EHelper(vfcvt_xfv) {
-  FLOAT_ARTHI(FCVT_XF)
+  FLOAT_ARTHI(FCVT_XF, UNSIGNED)
 }
 
 def_EHelper(vfcvt_fxuv) {
-  FLOAT_ARTHI(FCVT_FXU)
+  FLOAT_ARTHI(FCVT_FXU, UNSIGNED)
 }
 
 def_EHelper(vfcvt_fxv) {
-  FLOAT_ARTHI(FCVT_FX)
+  FLOAT_ARTHI(FCVT_FX, SIGNED)
 }
 
 def_EHelper(vfcvt_rtz_xufv) {
-  FLOAT_ARTHI(FCVT_RTZ_XUF)
+  FLOAT_ARTHI(FCVT_RTZ_XUF, UNSIGNED)
 }
 
 def_EHelper(vfcvt_rtz_xfv) {
-  FLOAT_ARTHI(FCVT_RTZ_XF)
+  FLOAT_ARTHI(FCVT_RTZ_XF, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_xufv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_XUF)
+  FLOAT_ARTHI_DWIDE(FWCVT_XUF, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_xfv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_XF)
+  FLOAT_ARTHI_DWIDE(FWCVT_XF, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_fxuv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_FXU)
+  FLOAT_ARTHI_DWIDE(FWCVT_FXU, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_fxv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_FX)
+  FLOAT_ARTHI_DWIDE(FWCVT_FX, SIGNED)
 }
 
 def_EHelper(vfwcvt_ffv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_FF)
+  FLOAT_ARTHI_DWIDE(FWCVT_FF, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_rtz_xufv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XUF)
+  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XUF, UNSIGNED)
 }
 
 def_EHelper(vfwcvt_rtz_xfv) {
-  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XF)
+  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_xufw) {
-  print_asm_template3(vfncvt_xufw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_XUF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_xfw) {
-  print_asm_template3(vfncvt_xfw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_XF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_fxuw) {
-  print_asm_template3(vfncvt_fxuw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_FXU, UNSIGNED)
 }
 
 def_EHelper(vfncvt_fxw) {
-  print_asm_template3(vfncvt_fxw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_FX, SIGNED)
 }
 
 def_EHelper(vfncvt_ffw) {
-  print_asm_template3(vfncvt_ffw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_FF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_rod_ffw) {
-  print_asm_template3(vfncvt_rod_ffw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_ROD_FF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_rtz_xufw) {
-  print_asm_template3(vfncvt_rtz_xufw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_RTZ_XUF, UNSIGNED)
 }
 
 def_EHelper(vfncvt_rtz_xfw) {
-  print_asm_template3(vfncvt_rtz_xfw);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DNARROW(FNCVT_RTZ_XF, UNSIGNED)
 }
 
 def_EHelper(vfsqrt_v) {
-  FLOAT_ARTHI(FSQRT)
+  FLOAT_ARTHI(FSQRT, UNSIGNED)
 }
 
 def_EHelper(vfrsqrt7_v) {
-  FLOAT_ARTHI(FRSQRT7)
+  FLOAT_ARTHI(FRSQRT7, UNSIGNED)
 }
 
 def_EHelper(vfrec7_v) {
-  FLOAT_ARTHI(FREC7)
+  FLOAT_ARTHI(FREC7, UNSIGNED)
 }
 
 def_EHelper(vfclass_v) {
-  FLOAT_ARTHI(FCLASS)
+  FLOAT_ARTHI(FCLASS, UNSIGNED)
 }
 
 def_EHelper(vfmerge) {
-  FLOAT_ARTHI(FMERGE)
+  FLOAT_ARTHI(FMERGE, UNSIGNED)
 }
 
 def_EHelper(vmfeq) {
@@ -927,51 +919,51 @@ def_EHelper(vmfge) {
 }
 
 def_EHelper(vfdiv) {
-  FLOAT_ARTHI(FDIV);
+  FLOAT_ARTHI(FDIV, UNSIGNED)
 }
 
 def_EHelper(vfrdiv) {
-  FLOAT_ARTHI(FRDIV);
+  FLOAT_ARTHI(FRDIV, UNSIGNED)
 }
 
 def_EHelper(vfmul) {
-  FLOAT_ARTHI(FMUL);
+  FLOAT_ARTHI(FMUL, UNSIGNED)
 }
 
 def_EHelper(vfrsub) {
-  FLOAT_ARTHI(FRSUB)
+  FLOAT_ARTHI(FRSUB, UNSIGNED)
 }
 
 def_EHelper(vfmadd) {
-  FLOAT_ARTHI(FMADD)
+  FLOAT_ARTHI(FMADD, UNSIGNED)
 }
 
 def_EHelper(vfnmadd) {
-  FLOAT_ARTHI(FNMADD);
+  FLOAT_ARTHI(FNMADD, UNSIGNED)
 }
 
 def_EHelper(vfmsub) {
-  FLOAT_ARTHI(FMSUB)
+  FLOAT_ARTHI(FMSUB, UNSIGNED)
 }
 
 def_EHelper(vfnmsub) {
-  FLOAT_ARTHI(FNMSUB)
+  FLOAT_ARTHI(FNMSUB, UNSIGNED)
 }
 
 def_EHelper(vfmacc) {
-  FLOAT_ARTHI(FMACC)
+  FLOAT_ARTHI(FMACC, UNSIGNED)
 }
 
 def_EHelper(vfnmacc) {
-  FLOAT_ARTHI(FNMACC)
+  FLOAT_ARTHI(FNMACC, UNSIGNED)
 }
 
 def_EHelper(vfmsac) {
-  FLOAT_ARTHI(FMSAC)
+  FLOAT_ARTHI(FMSAC, UNSIGNED)
 }
 
 def_EHelper(vfnmsac) {
-  FLOAT_ARTHI(FNMSAC)
+  FLOAT_ARTHI(FNMSAC, UNSIGNED)
 }
 
 def_EHelper(vfwadd) {

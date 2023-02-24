@@ -54,8 +54,8 @@ enum op_t {
   FSGNJN, FSGNJX, FSLIDE1UP, FSLIDE1DOWN, FMV_F_S, FMV_S_F, FCVT_XUF,
   FCVT_XF, FCVT_FXU, FCVT_FX, FCVT_RTZ_XUF, FCVT_RTZ_XF,
   FWCVT_XUF, FWCVT_XF, FWCVT_FXU, FWCVT_FX, FWCVT_FF, FWCVT_RTZ_XUF,
-  FWCVT_RTZ_XF, FNCVT_XUFW, FNCVT_XFW, FNCVT_FXUW, FNCVT_FXW, FNCVT_FFW,
-  FNCVT_ROD_FFW, FNCVT_RTZ_XUFW, FNCVT_RTZ_XFW, FSQRT, FRSQRT7,
+  FWCVT_RTZ_XF, FNCVT_XUF, FNCVT_XF, FNCVT_FXU, FNCVT_FX, FNCVT_FF,
+  FNCVT_ROD_FF, FNCVT_RTZ_XUF, FNCVT_RTZ_XF, FSQRT, FRSQRT7,
   FREC7, FCLASS, FMERGE, MFEQ, MFLE, MFLT, MFNE, MFGT, MFGE,
   FDIV, FRDIV, FMUL, FRSUB, FMADD, FNMADD, FMSUB, FNMSUB, FMACC, FNMACC,
   FMSAC, FNMSAC, FWREDUSUM, FWREDOSUM, FWADD_W, FWSUB_W,
@@ -65,12 +65,13 @@ enum op_t {
 enum fp_wop_t {
   noWidening,
   vsdWidening,
-  vdWidening
+  vdWidening,
+  vdNarrow
 };
 
 void vp_set_dirty();
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s);
-void floating_arthimetic_instr(int opcode, int widening, int dest_mask, Decode *s);
+void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest_mask, Decode *s);
 void mask_instr(int opcode, Decode *s);
 void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 
@@ -79,10 +80,11 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 #define ARTHI_MASK(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, 1, s);
 #define ARTHI_NARROW(opcode, is_signed, narrow) arthimetic_instr(opcode, is_signed, 0, narrow, 0, s);
 
-#define FLOAT_ARTHI(opcode) floating_arthimetic_instr(opcode, noWidening, 0, s);
-#define FLOAT_ARTHI_DWIDE(opcode) floating_arthimetic_instr(opcode, vdWidening, 0, s);
-#define FLOAT_ARTHI_SDWIDE(opcode) floating_arthimetic_instr(opcode, vsdWidening, 0, s);
-#define FLOAT_ARTHI_MASK(opcode) floating_arthimetic_instr(opcode, 0, 1, s);
+#define FLOAT_ARTHI(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, noWidening, 0, s);
+#define FLOAT_ARTHI_DWIDE(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, vdWidening, 0, s);
+#define FLOAT_ARTHI_SDWIDE(opcode) floating_arthimetic_instr(opcode, 0, vsdWidening, 0, s);
+#define FLOAT_ARTHI_DNARROW(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, vdNarrow, 0, s);
+#define FLOAT_ARTHI_MASK(opcode) floating_arthimetic_instr(opcode, 0, noWidening, 1, s);
 
 #define MASKINSTR(opcode) mask_instr(opcode, s);
 

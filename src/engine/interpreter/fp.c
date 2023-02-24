@@ -182,20 +182,25 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_SGNJN: *dest = fsgnj16(fsrc1, fsrc2, true, false); break;
       case FPCALL_SGNJX: *dest = fsgnj16(fsrc1, fsrc2, false, true); break;
 
-      case FPCALL_FToU: *dest = f16_to_ui16(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToS: *dest = f16_to_i16(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToUT: *dest = f16_to_ui16(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_FToST: *dest = f16_to_i16(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_UToF: *dest = ui32_to_f16(fsrc1.v).v;
-      case FPCALL_SToF: *dest = i32_to_f16(fsrc1.v).v;
+      case FPCALL_FToU: *dest = f16_to_ui16(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToS: *dest = f16_to_i16(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToUT: *dest = f16_to_ui16(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_FToST: *dest = f16_to_i16(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_UToF: *dest = ui32_to_f16(fsrc1.v).v; break;
+      case FPCALL_SToF: *dest = i32_to_f16(fsrc1.v).v; break;
 
-      case FPCALL_FToDU: *dest = f16_to_ui32(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToDS: *dest = f16_to_i32(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToDUT: *dest = f16_to_ui32(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_FToDST: *dest = f16_to_i32(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_UToDF: *dest = ui32_to_f32(fsrc1.v).v;
-      case FPCALL_SToDF: *dest = i32_to_f32(fsrc1.v).v;
-      case FPCALL_FToDF: *dest = f16_to_f32(fsrc1).v;
+      case FPCALL_FToDU: *dest = f16_to_ui32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToDS: *dest = f16_to_i32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToDUT: *dest = f16_to_ui32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_FToDST: *dest = f16_to_i32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_UToDF: *dest = ui32_to_f32(fsrc1.v).v; break;
+      case FPCALL_SToDF: *dest = i32_to_f32(fsrc1.v).v; break;
+      case FPCALL_FToDF: *dest = f16_to_f32(fsrc1).v; break;
+
+      case FPCALL_DFToU: *dest = f16_to_ui8(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToS: *dest = f16_to_i8(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToUT: *dest = f16_to_ui8(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_DFToST: *dest = f16_to_i8(fsrc1, softfloat_round_minMag, true); break;
 
       default: panic("op = %d not supported", op);
     }
@@ -244,21 +249,33 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_SGNJN: *dest = fsgnj32(fsrc1, fsrc2, true, false); break;
       case FPCALL_SGNJX: *dest = fsgnj32(fsrc1, fsrc2, false, true); break;
 
-      case FPCALL_FToU: *dest = f32_to_ui32(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToS: *dest = f32_to_i32(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToUT: *dest = f32_to_ui32(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_FToST: *dest = f32_to_i32(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_UToF: *dest = ui32_to_f32(fsrc1.v).v;
-      case FPCALL_SToF: *dest = i32_to_f32(fsrc1.v).v;
+      case FPCALL_FToU: *dest = f32_to_ui32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToS: *dest = f32_to_i32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToUT: *dest = f32_to_ui32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_FToST: *dest = f32_to_i32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_UToF: *dest = ui32_to_f32(fsrc1.v).v; break;
+      case FPCALL_SToF: *dest = i32_to_f32(fsrc1.v).v; break;
 
-      case FPCALL_FToDU: *dest = f32_to_ui64(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToDS: *dest = f32_to_i64(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToDUT: *dest = f32_to_ui64(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_FToDST: *dest = f32_to_i64(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_UToDF: *dest = ui32_to_f64(fsrc1.v).v;
-      case FPCALL_SToDF: *dest = i32_to_f64(fsrc1.v).v;
-      case FPCALL_FToDF: *dest = f32_to_f64(fsrc1).v;
+      case FPCALL_FToDU: *dest = f32_to_ui64(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToDS: *dest = f32_to_i64(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToDUT: *dest = f32_to_ui64(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_FToDST: *dest = f32_to_i64(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_UToDF: *dest = ui32_to_f64(fsrc1.v).v; break;
+      case FPCALL_SToDF: *dest = i32_to_f64(fsrc1.v).v; break;
+      case FPCALL_FToDF: *dest = f32_to_f64(fsrc1).v; break;
 
+      case FPCALL_DFToU: *dest = f32_to_ui16(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToS: *dest = f32_to_i16(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToUT: *dest = f32_to_ui16(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_DFToST: *dest = f32_to_i16(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_DUToF: *dest = ui32_to_f16(fsrc1.v).v; break;
+      case FPCALL_DSToF: *dest = i32_to_f16(fsrc1.v).v; break;
+      case FPCALL_DFToF: *dest = f32_to_f16(fsrc1).v; break;
+      case FPCALL_DFToFR:
+        softfloat_roundingMode = softfloat_round_odd;
+        *dest = f32_to_f16(fsrc1).v;
+        break;
+      
       default: panic("op = %d not supported", op);
     }
   } else if (w == FPCALL_W64 || FPCALL_W32_to_64) {
@@ -306,12 +323,24 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_SGNJN: *dest = fsgnj64(fsrc1, fsrc2, true, false); break;
       case FPCALL_SGNJX: *dest = fsgnj64(fsrc1, fsrc2, false, true); break;
 
-      case FPCALL_FToU: *dest = f64_to_ui64(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToS: *dest = f64_to_i64(fsrc1, softfloat_roundingMode, true);
-      case FPCALL_FToUT: *dest = f64_to_ui64(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_FToST: *dest = f64_to_i64(fsrc1, softfloat_round_minMag, true);
-      case FPCALL_UToF: *dest = ui64_to_f64(fsrc1.v).v;
-      case FPCALL_SToF: *dest = i64_to_f64(fsrc1.v).v;
+      case FPCALL_FToU: *dest = f64_to_ui64(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToS: *dest = f64_to_i64(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_FToUT: *dest = f64_to_ui64(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_FToST: *dest = f64_to_i64(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_UToF: *dest = ui64_to_f64(fsrc1.v).v; break;
+      case FPCALL_SToF: *dest = i64_to_f64(fsrc1.v).v; break;
+
+      case FPCALL_DFToU: *dest = f64_to_ui32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToS: *dest = f64_to_i32(fsrc1, softfloat_roundingMode, true); break;
+      case FPCALL_DFToUT: *dest = f64_to_ui32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_DFToST: *dest = f64_to_i32(fsrc1, softfloat_round_minMag, true); break;
+      case FPCALL_DUToF: *dest = ui64_to_f32(fsrc1.v).v; break;
+      case FPCALL_DSToF: *dest = i64_to_f32(fsrc1.v).v; break;
+      case FPCALL_DFToF: *dest = f64_to_f32(fsrc1).v; break;
+      case FPCALL_DFToFR:
+        softfloat_roundingMode = softfloat_round_odd;
+        *dest = f64_to_f32(fsrc1).v;
+        break;
 
       default: panic("op = %d not supported", op);
     } 
