@@ -53,6 +53,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
   uint64_t carry;
+  if(dest_mask && vtype->vma) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
@@ -288,7 +289,8 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
 void floating_arthimetic_instr(int opcode, int widening, int dest_mask, Decode *s) {
   int idx;
-  word_t FPCALL_TYPE; 
+  word_t FPCALL_TYPE;
+  if(dest_mask && vtype->vma) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
