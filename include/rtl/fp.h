@@ -88,7 +88,14 @@ enum {
 
   FPCALL_SGNJ,
   FPCALL_SGNJN,
-  FPCALL_SGNJX
+  FPCALL_SGNJX,
+
+  FPCALL_FToU,
+  FPCALL_FToS,
+  FPCALL_FToUT,
+  FPCALL_FToST,
+  FPCALL_UToF,
+  FPCALL_SToF,
 };
 
 #define FPCALL_CMD(op, w) (((op) << 16) | (w))

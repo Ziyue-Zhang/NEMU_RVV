@@ -9,6 +9,13 @@
 #define F32_SIGN ((uint64_t)1ul << 31)
 #define F64_SIGN ((uint64_t)1ul << 63)
 
+#define ui16_fromPosOverflow 0xFFFF
+#define ui16_fromNegOverflow 0
+#define ui16_fromNaN         0xFFFF
+#define i16_fromPosOverflow  0x7FFF
+#define i16_fromNegOverflow  (-0x7FFF - 1)
+#define i16_fromNaN          0x7FFF
+
 #define fsgnj16(a, b, n, x) \
   (uint16_t) ((a.v & ~F16_SIGN) | ((((x) ? a.v : (n) ? F16_SIGN : 0) ^ b.v) & F16_SIGN))
 #define fsgnj32(a, b, n, x) \
@@ -546,6 +553,37 @@ static inline uint32_t fp_get_exception() {
   if (softfp_ex & softfloat_flag_infinite ) ex |= FPCALL_EX_DZ;
   if (softfp_ex & softfloat_flag_invalid  ) ex |= FPCALL_EX_NV;
   return ex;
+}
+
+uint_fast16_t f16_to_ui16( float16_t a, uint_fast8_t roundingMode, bool exact )
+{
+    uint_fast8_t old_flags = softfloat_exceptionFlags;
+
+    uint_fast32_t sig32 = f16_to_ui32(a, roundingMode, exact);
+
+    if (sig32 > UINT16_MAX) {
+        softfloat_exceptionFlags = old_flags | softfloat_flag_invalid;
+        return ui16_fromPosOverflow;
+    } else {
+        return sig32;
+    }
+}
+
+static inline int_fast16_t f16_to_i16( float16_t a, uint_fast8_t roundingMode, bool exact )
+{
+    uint_fast8_t old_flags = softfloat_exceptionFlags;
+
+    int_fast32_t sig32 = f16_to_i32(a, roundingMode, exact);
+
+    if (sig32 > INT16_MAX) {
+        softfloat_exceptionFlags = old_flags | softfloat_flag_invalid;
+        return i16_fromPosOverflow;
+    } else if (sig32 < INT16_MIN) {
+        softfloat_exceptionFlags = old_flags | softfloat_flag_invalid;
+        return i16_fromNegOverflow;
+    } else {
+        return sig32;
+    }
 }
 
 static inline void fp_clear_exception() {

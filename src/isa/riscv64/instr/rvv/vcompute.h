@@ -791,33 +791,27 @@ def_EHelper(vfmvsf) {
 }
 
 def_EHelper(vfcvt_xufv) {
-  print_asm_template3(vfcvt_xufv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_XUF)
 }
 
 def_EHelper(vfcvt_xfv) {
-  print_asm_template3(vfcvt_xfv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_XF)
 }
 
 def_EHelper(vfcvt_fxuv) {
-  print_asm_template3(vfcvt_fxuv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_FXU)
 }
 
 def_EHelper(vfcvt_fxv) {
-  print_asm_template3(vfcvt_fxv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_FX)
 }
 
 def_EHelper(vfcvt_rtz_xufv) {
-  print_asm_template3(vfcvt_rtz_xufv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_RTZ_XUF)
 }
 
 def_EHelper(vfcvt_rtz_xfv) {
-  print_asm_template3(vfcvt_rtz_xfv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI(FCVT_RTZ_XF)
 }
 
 def_EHelper(vfwcvt_xufv) {
