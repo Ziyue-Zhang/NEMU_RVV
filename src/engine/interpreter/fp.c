@@ -189,6 +189,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_UToF: *dest = ui32_to_f16(fsrc1.v).v;
       case FPCALL_SToF: *dest = i32_to_f16(fsrc1.v).v;
 
+      case FPCALL_FToDU: *dest = f16_to_ui32(fsrc1, softfloat_roundingMode, true);
+      case FPCALL_FToDS: *dest = f16_to_i32(fsrc1, softfloat_roundingMode, true);
+      case FPCALL_FToDUT: *dest = f16_to_ui32(fsrc1, softfloat_round_minMag, true);
+      case FPCALL_FToDST: *dest = f16_to_i32(fsrc1, softfloat_round_minMag, true);
+      case FPCALL_UToDF: *dest = ui32_to_f32(fsrc1.v).v;
+      case FPCALL_SToDF: *dest = i32_to_f32(fsrc1.v).v;
+      case FPCALL_FToDF: *dest = f16_to_f32(fsrc1).v;
+
       default: panic("op = %d not supported", op);
     }
   } else if (w == FPCALL_W32 || w == FPCALL_W16_to_32) {
@@ -243,15 +251,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_UToF: *dest = ui32_to_f32(fsrc1.v).v;
       case FPCALL_SToF: *dest = i32_to_f32(fsrc1.v).v;
 
-      case FPCALL_I32ToF: *dest = i32_to_f32 (*src1).v; break;
-      case FPCALL_U32ToF: *dest = ui32_to_f32(*src1).v; break;
-      case FPCALL_I64ToF: *dest = i64_to_f32 (*src1).v; break;
-      case FPCALL_U64ToF: *dest = ui64_to_f32(*src1).v; break;
+      case FPCALL_FToDU: *dest = f32_to_ui64(fsrc1, softfloat_roundingMode, true);
+      case FPCALL_FToDS: *dest = f32_to_i64(fsrc1, softfloat_roundingMode, true);
+      case FPCALL_FToDUT: *dest = f32_to_ui64(fsrc1, softfloat_round_minMag, true);
+      case FPCALL_FToDST: *dest = f32_to_i64(fsrc1, softfloat_round_minMag, true);
+      case FPCALL_UToDF: *dest = ui32_to_f64(fsrc1.v).v;
+      case FPCALL_SToDF: *dest = i32_to_f64(fsrc1.v).v;
+      case FPCALL_FToDF: *dest = f32_to_f64(fsrc1).v;
 
-      case FPCALL_FToI32: *dest = my_f32_to_i32 (fsrc1); break;
-      case FPCALL_FToU32: *dest = my_f32_to_ui32(fsrc1); break;
-      case FPCALL_FToI64: *dest = my_f32_to_i64 (fsrc1); break;
-      case FPCALL_FToU64: *dest = my_f32_to_ui64(fsrc1); break;
       default: panic("op = %d not supported", op);
     }
   } else if (w == FPCALL_W64 || FPCALL_W32_to_64) {
@@ -306,18 +313,6 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_UToF: *dest = ui64_to_f64(fsrc1.v).v;
       case FPCALL_SToF: *dest = i64_to_f64(fsrc1.v).v;
 
-      case FPCALL_I32ToF: *dest = i32_to_f64 (*src1).v; break;
-      case FPCALL_U32ToF: *dest = ui32_to_f64(*src1).v; break;
-      case FPCALL_I64ToF: *dest = i64_to_f64 (*src1).v; break;
-      case FPCALL_U64ToF: *dest = ui64_to_f64(*src1).v; break;
-
-      case FPCALL_FToI32: *dest = my_f64_to_i32 (fsrc1); break;
-      case FPCALL_FToU32: *dest = my_f64_to_ui32(fsrc1); break;
-      case FPCALL_FToI64: *dest = my_f64_to_i64 (fsrc1); break;
-      case FPCALL_FToU64: *dest = my_f64_to_ui64(fsrc1); break;
-
-      case FPCALL_F32ToF64: *dest = f32_to_f64(rtlToVF32(*src1)).v; break;
-      case FPCALL_F64ToF32: *dest = f64_to_f32(fsrc1).v; break;
       default: panic("op = %d not supported", op);
     } 
   }

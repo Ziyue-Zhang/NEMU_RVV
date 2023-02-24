@@ -815,38 +815,31 @@ def_EHelper(vfcvt_rtz_xfv) {
 }
 
 def_EHelper(vfwcvt_xufv) {
-  print_asm_template3(vfwcvt_xufv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_XUF)
 }
 
 def_EHelper(vfwcvt_xfv) {
-  print_asm_template3(vfwcvt_xfv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_XF)
 }
 
 def_EHelper(vfwcvt_fxuv) {
-  print_asm_template3(vfwcvt_fxuv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_FXU)
 }
 
 def_EHelper(vfwcvt_fxv) {
-  print_asm_template3(vfwcvt_fxv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_FX)
 }
 
 def_EHelper(vfwcvt_ffv) {
-  print_asm_template3(vfwcvt_ffv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_FF)
 }
 
 def_EHelper(vfwcvt_rtz_xufv) {
-  print_asm_template3(vfwcvt_rtz_xufv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XUF)
 }
 
 def_EHelper(vfwcvt_rtz_xfv) {
-  print_asm_template3(vfwcvt_rtz_xfv);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_DWIDE(FWCVT_RTZ_XF)
 }
 
 def_EHelper(vfncvt_xufw) {
@@ -982,7 +975,7 @@ def_EHelper(vfnmsac) {
 }
 
 def_EHelper(vfwadd) {
-  FLOAT_ARTHI_WIDE(FADD)
+  FLOAT_ARTHI_SDWIDE(FADD)
 }
 
 def_EHelper(vfwredusum) {
@@ -991,7 +984,7 @@ def_EHelper(vfwredusum) {
 }
 
 def_EHelper(vfwsub) {
-  FLOAT_ARTHI_WIDE(FSUB)
+  FLOAT_ARTHI_SDWIDE(FSUB)
 }
 
 def_EHelper(vfwredosum) {
@@ -1010,23 +1003,23 @@ def_EHelper(vfwsub_w) {
 }
 
 def_EHelper(vfwmul) {
-  FLOAT_ARTHI_WIDE(FMUL)
+  FLOAT_ARTHI_SDWIDE(FMUL)
 }
 
 def_EHelper(vfwmacc) {
-  FLOAT_ARTHI_WIDE(FMACC)
+  FLOAT_ARTHI_SDWIDE(FMACC)
 }
 
 def_EHelper(vfwnmacc) {
-  FLOAT_ARTHI_WIDE(FNMACC)
+  FLOAT_ARTHI_SDWIDE(FNMACC)
 }
 
 def_EHelper(vfwmsac) {
-  FLOAT_ARTHI_WIDE(FMSAC)
+  FLOAT_ARTHI_SDWIDE(FMSAC)
 }
 
 def_EHelper(vfwnmsac) {
-  FLOAT_ARTHI_WIDE(FNMSAC)
+  FLOAT_ARTHI_SDWIDE(FNMSAC)
 }
 
 #endif // CONFIG_RVV
