@@ -21,7 +21,7 @@
 
 #include "common.h"
 
-#define VLEN 256
+#define VLEN 128
 #define VLENLG 8
 #define MAXELEN 64
 #define VENUM64 (VLEN/64)
