@@ -27,31 +27,73 @@
 #define s2    (&tmp_reg[2])
 #define s3    (&tmp_reg[3])
 
-__uint128_t int_rounding(__uint128_t result, int xrm, int gb) {
-    const uint64_t lsb = 1UL << (gb);
-    const uint64_t lsb_half = lsb >> 1;
-    switch (xrm) {
-        case RNU :
-            result += lsb_half;
-            break;
-        case RNE :
-            if ((result & lsb_half) && ((result & (lsb_half - 1)) || (result & lsb)))
-                result += lsb;
-            break;
-        case RDN :
-            break;
-        case ROD :
-            if (result & (lsb - 1))
-                result |= lsb;
-            break;
-    }
-    return result;
-}
+typedef __uint128_t uint128_t;
+typedef __int128_t int128_t;
+
+#define ADD(T, x, y) \
+    ({T _x = (x), _y = (y); _x + _y;})
+
+#define SUB(T, x, y) \
+    ({T _x = (x), _y = (y); _x - _y;})
+
+#define SAT_ADD(T, UT, x, y, sat) \
+    ({UT ux = (T)x; UT uy = (T)y; UT res = ADD(UT, ux, uy); \
+      bool _sat = false; int sh = sizeof(T) * 8 - 1; \
+      ux = (ux >> sh) + (((UT)0x1 << sh) - 1); \
+      if ((T) ((ux ^ uy) | ~(uy ^ res)) >= 0) { \
+        res = ux; _sat = true; } \
+      *(sat) = _sat; (T)res;})
+
+#define SAT_SUB(T, UT, x, y, sat) \
+    ({UT ux = (UT)x; UT uy = (UT)y; UT res = SUB(UT, ux, uy); \
+      bool _sat = false; int sh = sizeof(T) * 8 - 1; \
+      ux = (ux >> sh) + (((UT)0x1 << sh) - 1); \
+      if ((T) ((ux ^ uy) & (ux ^ res)) < 0) { \
+        res = ux; _sat = true; } \
+      *(sat) = _sat; (T)res;})
+
+#define INT_ROUNDING(result, xrm, gb) \
+  do { \
+    const uint64_t lsb = 1UL << (gb); \
+    const uint64_t lsb_half = lsb >> 1; \
+    switch (xrm) { \
+      case RNU: \
+        result += lsb_half; \
+        break; \
+      case RNE: \
+        if ((result & lsb_half) && ((result & (lsb_half - 1)) || (result & lsb))) \
+          result += lsb; \
+        break; \
+      case RDN: \
+        break; \
+      case ROD: \
+        if (result & (lsb - 1)) \
+          result |= lsb; \
+        break; \
+    } \
+  } while (0)
+
+#define ROUNDING(op, vd, vs2, vs1) \
+    ({ \
+        uint128_t res = ((uint128_t)vs2) op vs1; \
+        INT_ROUNDING(res, vxrm->val, 1); \
+        vd = res >> 1; \
+    })
 
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
   uint64_t carry;
+  bool sat = false;
+  int shift;
+  unsigned narrow_shift;
+  uint128_t u128_result;
+  int128_t i128_result;
+  int sew = 8 << vtype->vsew;
+  int64_t int_max = INT64_MAX >> (64 - sew);
+  int64_t int_min = INT64_MIN >> (64 - sew);
+  uint64_t uint_max = UINT64_MAX >> (64 - sew);
+  uint64_t sign_mask = UINT64_MAX << (64 - sew);
   if(dest_mask) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
@@ -75,7 +117,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
     // operand - vs2
     get_vreg(id_src2->reg, idx, s0, vtype->vsew+narrow, vtype->vlmul, is_signed, 1);
-     if(is_signed) rtl_sext(s, s0, s0, 1 << (vtype->vsew+narrow));
+    if(is_signed) rtl_sext(s, s0, s0, 1 << (vtype->vsew+narrow));
 
     // operand - s1 / rs1 / imm
     switch (s->src_vmode) {
@@ -101,6 +143,9 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         else          rtl_li(s, s1, s->isa.instr.v_opv3.v_imm5 );
         break;
     }
+
+    shift = *s1 & (sew - 1);
+    narrow_shift = *s1 & (sew * 2 - 1);
 
     // op
     switch (opcode) {
@@ -264,6 +309,66 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         if (*s1 < vlmax) get_vreg(id_src2->reg, *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
         else rtl_li(s, s1, 0);
         break;
+      case SADDU :
+        rtl_add(s, s1, s0, s1);
+        sat = 0;
+        if (*s1 < *s0) {rtl_li(s, s1, ~0lu); sat = 1;}
+        break;
+      case SSUBU :
+        rtl_sub(s, s1, s0, s1);
+        sat = 0;
+        if (*s1 > *s0) {rtl_li(s, s1, 0); sat = 1;}
+        break;
+      case SADD :
+        switch (vtype->vsew) {
+          case 0 : *s1 = SAT_ADD(int8_t, uint8_t, *s0, *s1, &sat); break;
+          case 1 : *s1 = SAT_ADD(int16_t, uint16_t, *s0, *s1, &sat); break;
+          case 2 : *s1 = SAT_ADD(int32_t, uint32_t, *s0, *s1, &sat); break;
+          case 3 : *s1 = SAT_ADD(int64_t, uint64_t, *s0, *s1, &sat); break;
+        }
+        break;
+      case SSUB :
+        switch (vtype->vsew) {
+          case 0 : *s1 = SAT_SUB(int8_t, uint8_t, *s0, *s1, &sat); break;
+          case 1 : *s1 = SAT_SUB(int16_t, uint16_t, *s0, *s1, &sat); break;
+          case 2 : *s1 = SAT_SUB(int32_t, uint32_t, *s0, *s1, &sat); break;
+          case 3 : *s1 = SAT_SUB(int64_t, uint64_t, *s0, *s1, &sat); break;
+        }
+        break;
+      case AADD : ROUNDING(+, *s1, *s0, *s1); break;
+      case ASUB : ROUNDING(-, *s1, *s0, *s1); break;
+      case SMUL :
+        if (*s1 == *s0 && *s1 == int_min) {i128_result = int_max;}
+        else {
+          i128_result = (int128_t) *s1 * (int128_t) *s0;
+          INT_ROUNDING(i128_result, vxrm->val, sew - 1);
+          i128_result >>= sew - 1;
+        }
+        *s1 = (int64_t) i128_result;
+      case SSRL :
+        u128_result = *s0;
+        INT_ROUNDING(u128_result, vxrm->val, shift);
+        *s1 = (uint64_t) (u128_result >> shift);
+      case SSRA :
+        i128_result = *s0;
+        INT_ROUNDING(i128_result, vxrm->val, shift);
+        *s1 = (int64_t) (i128_result >> shift);
+      case NCLIP :
+        rtl_sext(s, s0, s0, 1 << (vtype->vsew+1));
+        i128_result = *s0;
+        INT_ROUNDING(i128_result, vxrm->val, narrow_shift);
+        i128_result >>= narrow_shift;
+        if (i128_result > int_max) i128_result = int_max;
+        else if (i128_result < int_min) i128_result = int_min;
+        *s1 = (int64_t) i128_result;
+      case NCLIPU :
+        u128_result = *s0;
+        INT_ROUNDING(u128_result, vxrm->val, narrow_shift);
+        u128_result >>= narrow_shift;
+        if (u128_result & sign_mask) {
+          u128_result = uint_max;
+        }
+        *s1 = (uint64_t) u128_result;
     }
 
     // store to vrf

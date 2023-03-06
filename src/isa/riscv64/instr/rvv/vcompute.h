@@ -106,7 +106,7 @@ def_EHelper(vadc) {
 }
 
 def_EHelper(vmadc) {
-  ARTHI_MASK(MADC, UNSIGNED)
+  ARTHI_MASK(MADC, SIGNED)
 }
 
 def_EHelper(vsbc) {
@@ -114,7 +114,7 @@ def_EHelper(vsbc) {
 }
 
 def_EHelper(vmsbc) {
-  ARTHI_MASK(MSBC, UNSIGNED)
+  ARTHI_MASK(MSBC, SIGNED)
 }
 
 def_EHelper(vmerge) {
@@ -176,23 +176,27 @@ def_EHelper(vmsgt) {
 }
 
 def_EHelper(vsaddu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SADDU, UNSIGNED)
 }
 
 def_EHelper(vsadd) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SADD, SIGNED)
 }
 
 def_EHelper(vssubu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SSUBU, UNSIGNED)
 }
 
 def_EHelper(vssub) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SSUB, SIGNED)
 }
 
 def_EHelper(vaadd) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(AADD, SIGNED)
+}
+
+def_EHelper(vaaddu) {
+  ARTHI(AADD, UNSIGNED)
 }
 
 def_EHelper(vsll) {
@@ -202,11 +206,15 @@ def_EHelper(vsll) {
 }
 
 def_EHelper(vasub) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(AADD, SIGNED)
+}
+
+def_EHelper(vasubu) {
+  ARTHI(AADD, UNSIGNED)
 }
 
 def_EHelper(vsmul) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SMUL, SIGNED)
 }
 
 def_EHelper(vsrl) {
@@ -222,11 +230,11 @@ def_EHelper(vsra) {
 }
 
 def_EHelper(vssrl) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SSRL, UNSIGNED)
 }
 
 def_EHelper(vssra) {
-  longjmp_raise_intr(EX_II);
+  ARTHI(SSRA, UNSIGNED)
 }
 
 def_EHelper(vnsrl) {
@@ -238,11 +246,11 @@ def_EHelper(vnsra) {
 }
 
 def_EHelper(vnclipu) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_NARROW(NCLIPU, UNSIGNED, 1)
 }
 
 def_EHelper(vnclip) {
-  longjmp_raise_intr(EX_II);
+  ARTHI_NARROW(NCLIP, UNSIGNED, 1)
 }
 
 def_EHelper(vwredsumu) {
@@ -316,6 +324,7 @@ def_EHelper(vredmax) {
 }
 
 def_EHelper(vmvsx) {
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
   rtl_lr(s, &(id_src->val), id_src1->reg, 4);
   rtl_mv(s, s1, &id_src->val); 
   rtl_sext(s, s1, s1, 1 << vtype->vsew);

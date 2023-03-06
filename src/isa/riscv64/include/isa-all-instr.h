@@ -65,8 +65,8 @@
   f(vmerge) f(vmseq) f(vmsne) f(vmsltu) \
   f(vmslt) f(vmsleu) f(vmsle) f(vmsgtu) \
   f(vmsgt) f(vsaddu) f(vsadd) f(vssubu) \
-  f(vssub) f(vaadd) f(vsll) f(vasub) \
-  f(vsmul) f(vsrl) f(vsra) \
+  f(vssub) f(vaadd) f(vaaddu) f(vsll) f(vasub) \
+  f(vasubu) f(vsmul) f(vsrl) f(vsra) \
   f(vssra) f(vnsrl) f(vnsra) f(vnclipu) \
   f(vnclip) f(vssrl) f(vwredsumu) f(vwredsum) \
   f(vdotu) f(vdot) f(vwsmaccu) f(vwsmacc) \
