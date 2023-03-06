@@ -254,11 +254,11 @@ def_EHelper(vnclip) {
 }
 
 def_EHelper(vwredsumu) {
-  REDInstr_WIDE(REDSUM, UNSIGNED);
+  WREDUCTION(REDSUM, UNSIGNED);
 }
 
 def_EHelper(vwredsum) {
-  REDInstr_WIDE(REDSUM, SIGNED);
+  WREDUCTION(REDSUM, SIGNED);
 }
 
 def_EHelper(vdotu) {
@@ -288,39 +288,39 @@ def_EHelper(vwsmaccus) {
 
 //op-m
 def_EHelper(vredsum) {
-  REDInstr(REDSUM, SIGNED);
+  REDUCTION(REDSUM, SIGNED);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vredand) {
-  REDInstr(REDAND, UNSIGNED);
+  REDUCTION(REDAND, UNSIGNED);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vredor) {
-  REDInstr(REDOR, UNSIGNED);
+  REDUCTION(REDOR, UNSIGNED);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vredxor) {
-  REDInstr(REDXOR, UNSIGNED);
+  REDUCTION(REDXOR, UNSIGNED);
   // longjmp_raise_intr(EX_II);
 }
 
 def_EHelper(vredminu) {
-  REDInstr(REDMINU, UNSIGNED);
+  REDUCTION(REDMINU, UNSIGNED);
 }
 
 def_EHelper(vredmin) {
-  REDInstr(REDMIN, SIGNED);
+  REDUCTION(REDMIN, SIGNED);
 }
 
 def_EHelper(vredmaxu) {
-  REDInstr(REDMAXU, UNSIGNED);
+  REDUCTION(REDMAXU, UNSIGNED);
 }
 
 def_EHelper(vredmax) {
-  REDInstr(REDMAX, SIGNED);
+  REDUCTION(REDMAX, SIGNED);
 }
 
 def_EHelper(vmvsx) {
@@ -734,8 +734,7 @@ def_EHelper(vfadd) {
 }
 
 def_EHelper(vfredusum) {
-  print_asm_template3(vfredusum);
-  longjmp_raise_intr(EX_II);
+  FREDUCTION(FREDUSUM)
 }
 
 def_EHelper(vfsub) {
@@ -743,8 +742,7 @@ def_EHelper(vfsub) {
 }
 
 def_EHelper(vfredosum) {
-  print_asm_template3(vfredosum);
-  longjmp_raise_intr(EX_II);
+  FREDUCTION(FREDOSUM)
 }
 
 def_EHelper(vfmin) {
@@ -752,8 +750,7 @@ def_EHelper(vfmin) {
 }
 
 def_EHelper(vfredmin) {
-  print_asm_template3(vfredmin);
-  longjmp_raise_intr(EX_II);
+  FREDUCTION(FREDMIN)
 }
 
 def_EHelper(vfmax) {
@@ -761,8 +758,7 @@ def_EHelper(vfmax) {
 }
 
 def_EHelper(vfredmax) {
-  print_asm_template3(vfredmax);
-  longjmp_raise_intr(EX_II);
+  FREDUCTION(FREDMAX)
 }
 
 def_EHelper(vfsgnj) {
@@ -980,8 +976,7 @@ def_EHelper(vfwadd) {
 }
 
 def_EHelper(vfwredusum) {
-  print_asm_template3(vfwredusum);
-  longjmp_raise_intr(EX_II);
+  FWREDUCTION(FREDUSUM)
 }
 
 def_EHelper(vfwsub) {
@@ -989,8 +984,7 @@ def_EHelper(vfwsub) {
 }
 
 def_EHelper(vfwredosum) {
-  print_asm_template3(vfwredosum);
-  longjmp_raise_intr(EX_II);
+  FWREDUCTION(FREDOSUM)
 }
 
 def_EHelper(vfwadd_w) {

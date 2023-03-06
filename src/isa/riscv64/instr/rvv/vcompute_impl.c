@@ -396,6 +396,27 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest_mask, Decode *s) {
   int idx;
   word_t FPCALL_TYPE;
+  // fpcall type
+  switch (vtype->vsew) {
+    case 0 : panic("f8 not supported"); break;
+    case 1 : 
+      switch (widening) {
+        case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
+        case vdWidening :
+        case vdNarrow :
+        case noWidening : FPCALL_TYPE = FPCALL_W16; break;
+      }
+      break;
+    case 2 : 
+      switch (widening) {
+        case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
+        case vdWidening :
+        case vdNarrow :
+        case noWidening : FPCALL_TYPE = FPCALL_W32; break;
+      }
+      break;
+    case 3 : FPCALL_TYPE = FPCALL_W64; break;
+  }
   if(dest_mask) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
@@ -429,28 +450,6 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
           case 3 : *s1 = *s1 & 0xffffffffffffffff; break;
         }
         break;
-    }
-
-    // fpcall type
-    switch (vtype->vsew) {
-      case 0 : panic("f8 not supported"); break;
-      case 1 : 
-        switch (widening) {
-          case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
-          case vdWidening :
-          case vdNarrow :
-          case noWidening : FPCALL_TYPE = FPCALL_W16; break;
-        }
-        break;
-      case 2 : 
-        switch (widening) {
-          case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
-          case vdWidening :
-          case vdNarrow :
-          case noWidening : FPCALL_TYPE = FPCALL_W32; break;
-        }
-        break;
-      case 3 : FPCALL_TYPE = FPCALL_W64; break;
     }
 
     switch (opcode) {
@@ -610,6 +609,63 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
 
   }
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew+wide, vtype->vlmul, 0);
+}
+
+void float_reduction_instr(int opcode, int widening, Decode *s) {
+  if (widening)
+    get_vreg(id_src->reg, 0, s1, vtype->vsew+1, vtype->vlmul, 0, 1);
+  else
+    get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
+
+  int idx;
+  word_t FPCALL_TYPE;
+
+  // fpcall type
+  switch (vtype->vsew) {
+    case 0 : panic("f8 not supported"); break;
+    case 1 : 
+      switch (widening) {
+        case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
+        case vdWidening :
+        case vdNarrow :
+        case noWidening : FPCALL_TYPE = FPCALL_W16; break;
+      }
+      break;
+    case 2 : 
+      switch (widening) {
+        case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
+        case vdWidening :
+        case vdNarrow :
+        case noWidening : FPCALL_TYPE = FPCALL_W32; break;
+      }
+      break;
+    case 3 : FPCALL_TYPE = FPCALL_W64; break;
+  }
+
+  for(idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask==0) {
+      continue;
+    }
+    // operand - vs2
+    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
+
+
+    // op
+    switch (opcode) {
+      case FREDUSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
+      case FREDOSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
+      case FREDMIN : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MIN, FPCALL_TYPE)); break;
+      case FREDMAX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MAX, FPCALL_TYPE)); break;
+      //  case MIN : 
+      // MINU is hard to achieve parallel
+    }
+
+  }
+  if (widening)
+    set_vreg(id_dest->reg, 0, *s1, vtype->vsew+1, vtype->vlmul, 0);
+  else
+    set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 0);
 }
 
 // dirty job here
