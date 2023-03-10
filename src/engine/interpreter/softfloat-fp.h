@@ -9,6 +9,10 @@
 #define F32_SIGN ((uint64_t)1ul << 31)
 #define F64_SIGN ((uint64_t)1ul << 63)
 
+#define defaultNaNF16UI 0x7E00
+#define defaultNaNF32UI 0x7FC00000
+#define defaultNaNF64UI UINT64_C( 0x7FF8000000000000 )
+
 #define ui8_fromPosOverflow  0xFF
 #define ui8_fromNegOverflow  0
 #define ui8_fromNaN          0xFF

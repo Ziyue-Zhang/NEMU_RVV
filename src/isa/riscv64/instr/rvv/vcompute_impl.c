@@ -439,7 +439,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
     // operand - s1 / rs1 / imm
     switch (s->src_vmode) {
       case SRC_VV : 
-        get_vreg(id_src->reg, idx, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        get_vreg(id_src->reg, idx, s1, vtype->vsew, vtype->vlmul, 0, 0);
         break;
       case SRC_VF :   
         rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]

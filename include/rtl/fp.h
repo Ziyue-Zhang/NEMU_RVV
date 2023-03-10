@@ -77,6 +77,8 @@ enum {
 
   FPCALL_NEED_RM,  // seperator
 
+  FPCALL_UADD,
+  
   FPCALL_MAX,
   FPCALL_MIN,
   FPCALL_LE,

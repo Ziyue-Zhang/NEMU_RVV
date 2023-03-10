@@ -157,6 +157,12 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_MIN: *dest = f16_min(fsrc1, fsrc2).v; break;
       case FPCALL_MAX: *dest = f16_max(fsrc1, fsrc2).v; break;
 
+      case FPCALL_UADD:
+        *dest = f16_add(fsrc1, fsrc2).v;
+        uint64_t classify = f16_classify(rtlToF16(*dest));
+        if (classify & 0x300) *dest = defaultNaNF16UI;
+        break;
+
       case FPCALL_SQRT: *dest = f16_sqrt(fsrc1).v; break;
       case FPCALL_RSQRT7: *dest = f16_rsqrte7(fsrc1).v; break;
       case FPCALL_REC7: *dest = f16_recip7(fsrc1).v; break;
@@ -223,6 +229,12 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_DIV: *dest = f32_div(fsrc1, fsrc2).v; break;
       case FPCALL_MIN: *dest = f32_min(fsrc1, fsrc2).v; break;
       case FPCALL_MAX: *dest = f32_max(fsrc1, fsrc2).v; break;
+
+      case FPCALL_UADD:
+        *dest = f32_add(fsrc1, fsrc2).v;
+        uint64_t classify = f32_classify(rtlToF32(*dest));
+        if (classify & 0x300) *dest = defaultNaNF32UI;
+        break;
 
       case FPCALL_SQRT: *dest = f32_sqrt(fsrc1).v; break;
       case FPCALL_RSQRT7: *dest = f32_rsqrte7(fsrc1).v; break;
@@ -297,6 +309,12 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_DIV: *dest = f64_div(fsrc1, fsrc2).v; break;
       case FPCALL_MAX: *dest = f64_max(fsrc1, fsrc2).v; break;
       case FPCALL_MIN: *dest = f64_min(fsrc1, fsrc2).v; break;
+
+      case FPCALL_UADD:
+        *dest = f64_add(fsrc1, fsrc2).v;
+        uint64_t classify = f64_classify(rtlToF64(*dest));
+        if (classify & 0x300) *dest = defaultNaNF64UI;
+        break;
 
       case FPCALL_SQRT: *dest = f64_sqrt(fsrc1).v; break;
       case FPCALL_RSQRT7: *dest = f64_rsqrte7(fsrc1).v; break;
