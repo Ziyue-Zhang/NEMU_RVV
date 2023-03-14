@@ -746,7 +746,7 @@ def_EHelper(vfredosum) {
 }
 
 def_EHelper(vfmin) {
-  FLOAT_ARTHI(MIN, UNSIGNED)
+  FLOAT_ARTHI(FMIN, UNSIGNED)
 }
 
 def_EHelper(vfredmin) {
@@ -754,7 +754,7 @@ def_EHelper(vfredmin) {
 }
 
 def_EHelper(vfmax) {
-  FLOAT_ARTHI(MAX, UNSIGNED)
+  FLOAT_ARTHI(FMAX, UNSIGNED)
 }
 
 def_EHelper(vfredmax) {
