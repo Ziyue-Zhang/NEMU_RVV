@@ -988,13 +988,11 @@ def_EHelper(vfwredosum) {
 }
 
 def_EHelper(vfwadd_w) {
-  print_asm_template3(vfwadd_w);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_SWIDE(FADD)
 }
 
 def_EHelper(vfwsub_w) {
-  print_asm_template3(vfwsub_w);
-  longjmp_raise_intr(EX_II);
+  FLOAT_ARTHI_SWIDE(FSUB)
 }
 
 def_EHelper(vfwmul) {

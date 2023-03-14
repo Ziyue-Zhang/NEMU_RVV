@@ -65,6 +65,7 @@ enum op_t {
 enum fp_wop_t {
   noWidening,
   vsdWidening,
+  vsWidening,
   vdWidening,
   vdNarrow
 };
@@ -84,6 +85,7 @@ void float_reduction_instr(int opcode, int widening, Decode *s);
 #define FLOAT_ARTHI(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, noWidening, 0, s);
 #define FLOAT_ARTHI_DWIDE(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, vdWidening, 0, s);
 #define FLOAT_ARTHI_SDWIDE(opcode) floating_arthimetic_instr(opcode, 0, vsdWidening, 0, s);
+#define FLOAT_ARTHI_SWIDE(opcode) floating_arthimetic_instr(opcode, 0, vsWidening, 0, s);
 #define FLOAT_ARTHI_DNARROW(opcode, is_signed) floating_arthimetic_instr(opcode, is_signed, vdNarrow, 0, s);
 #define FLOAT_ARTHI_MASK(opcode) floating_arthimetic_instr(opcode, 0, noWidening, 1, s);
 
@@ -93,7 +95,7 @@ void float_reduction_instr(int opcode, int widening, Decode *s);
 #define WREDUCTION(opcode, is_signed) reduction_instr(opcode, is_signed, 1, s);
 
 #define FREDUCTION(opcode) float_reduction_instr(opcode, 0, s);
-#define FWREDUCTION(opcode) float_reduction_instr(opcode, 1, s);
+#define FWREDUCTION(opcode) float_reduction_instr(opcode, vsWidening, s);
 
 #endif // __RISCV64_VCOMPUTE_IMPL_H__
 

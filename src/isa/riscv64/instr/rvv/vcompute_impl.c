@@ -402,6 +402,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
     case 1 : 
       switch (widening) {
         case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W16_to_32; break;
         case vdWidening :
         case vdNarrow :
         case noWidening : FPCALL_TYPE = FPCALL_W16; break;
@@ -410,6 +411,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
     case 2 : 
       switch (widening) {
         case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W32_to_64; break;
         case vdWidening :
         case vdNarrow :
         case noWidening : FPCALL_TYPE = FPCALL_W32; break;
@@ -434,7 +436,10 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
     }
 
     // operand - vs2
-    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
+    if (widening == vsWidening)
+      get_vreg(id_src2->reg, idx, s0, vtype->vsew+1, vtype->vlmul, is_signed, 1);
+    else
+      get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
 
     // operand - s1 / rs1 / imm
     switch (s->src_vmode) {
@@ -529,7 +534,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
 
     if(dest_mask == 1) 
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
-    else if (widening == vsdWidening || widening == vdWidening)
+    else if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
     else if (widening == vdNarrow)
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew-1, vtype->vlmul, 1);
@@ -612,10 +617,7 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
 }
 
 void float_reduction_instr(int opcode, int widening, Decode *s) {
-  if (widening)
-    get_vreg(id_src->reg, 0, s1, vtype->vsew+1, vtype->vlmul, 0, 1);
-  else
-    get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
+  get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
 
   int idx;
   word_t FPCALL_TYPE;
@@ -625,17 +627,13 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
     case 0 : panic("f8 not supported"); break;
     case 1 : 
       switch (widening) {
-        case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
-        case vdWidening :
-        case vdNarrow :
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W16_to_32; break;
         case noWidening : FPCALL_TYPE = FPCALL_W16; break;
       }
       break;
     case 2 : 
       switch (widening) {
-        case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
-        case vdWidening :
-        case vdNarrow :
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W32_to_64; break;
         case noWidening : FPCALL_TYPE = FPCALL_W32; break;
       }
       break;
@@ -648,7 +646,10 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
       continue;
     }
     // operand - vs2
-    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
+    if (widening)
+      get_vreg(id_src2->reg, idx, s0, vtype->vsew+1, vtype->vlmul, 0, 1);
+    else
+      get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
 
 
     // op
