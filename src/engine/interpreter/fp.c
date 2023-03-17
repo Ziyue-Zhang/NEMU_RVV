@@ -210,11 +210,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
 
       default: panic("op = %d not supported", op);
     }
-  } else if (w == FPCALL_W32 || w == FPCALL_W16_to_32 || w == FPCALL_SRC2_W16_to_32) {
+  } else if (w == FPCALL_W32 || w == FPCALL_W16_to_32 || w == FPCALL_SRC1_W16_to_32 || w == FPCALL_SRC2_W16_to_32) {
     float32_t fsrc1;
     float32_t fsrc2;
     if (w == FPCALL_W32) {
       fsrc1 = rtlToVF32(*src1);
+      fsrc2 = rtlToVF32(*src2);
+    } else if (w == FPCALL_SRC1_W16_to_32) {
+      fsrc1 = f16_to_f32(rtlToF16(*src1));
       fsrc2 = rtlToVF32(*src2);
     } else if (w == FPCALL_SRC2_W16_to_32) {
       fsrc1 = rtlToVF32(*src1);
@@ -284,7 +287,7 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       case FPCALL_DFToST: *dest = f32_to_i16(fsrc1, softfloat_round_minMag, true); break;
       case FPCALL_DUToF: *dest = ui32_to_f16(fsrc1.v).v; break;
       case FPCALL_DSToF: *dest = i32_to_f16(fsrc1.v).v; break;
-      case FPCALL_DFToF: *dest = f32_to_f16(fsrc1).v; break;
+      case FPCALL_DFToF: *dest = f32_to_f16(fsrc1).v; printf("%lx\n", *dest); break;
       case FPCALL_DFToFR:
         softfloat_roundingMode = softfloat_round_odd;
         *dest = f32_to_f16(fsrc1).v;
@@ -292,11 +295,14 @@ def_rtl(vfpcall, rtlreg_t *dest, const rtlreg_t *src1, const rtlreg_t *src2, uin
       
       default: panic("op = %d not supported", op);
     }
-  } else if (w == FPCALL_W64 || w == FPCALL_W32_to_64 || w == FPCALL_SRC2_W32_to_64) {
+  } else if (w == FPCALL_W64 || w == FPCALL_W32_to_64 || w == FPCALL_SRC1_W32_to_64 || w == FPCALL_SRC2_W32_to_64) {
     float64_t fsrc1;
     float64_t fsrc2;
     if (w == FPCALL_W64) {
       fsrc1 = rtlToF64(*src1);
+      fsrc2 = rtlToF64(*src2);
+    } else if (w == FPCALL_SRC1_W32_to_64) {
+      fsrc1 = f32_to_f64(rtlToVF32(*src1));
       fsrc2 = rtlToF64(*src2);
     } else if (w == FPCALL_SRC2_W32_to_64) {
       fsrc1 = rtlToF64(*src1);

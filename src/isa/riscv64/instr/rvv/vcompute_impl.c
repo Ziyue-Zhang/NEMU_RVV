@@ -522,7 +522,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       case FNCVT_RTZ_XF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToST, FPCALL_TYPE)); break;
       case FNCVT_FXU : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DUToF, FPCALL_TYPE)); break;
       case FNCVT_FX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DSToF, FPCALL_TYPE)); break;
-      case FNCVT_FF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToF, FPCALL_TYPE)); break;
+      case FNCVT_FF : printf("%d\n", vtype->vsew); rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToF, FPCALL_TYPE)); break;
       case FNCVT_ROD_FF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToFR, FPCALL_TYPE)); break;
       case FSLIDE1UP :
         if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
@@ -617,7 +617,10 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
 }
 
 void float_reduction_instr(int opcode, int widening, Decode *s) {
-  get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
+  if (widening)
+    get_vreg(id_src->reg, 0, s1, vtype->vsew+1, vtype->vlmul, 0, 1);
+  else
+    get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
 
   int idx;
   word_t FPCALL_TYPE;
@@ -627,13 +630,13 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
     case 0 : panic("f8 not supported"); break;
     case 1 : 
       switch (widening) {
-        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W16_to_32; break;
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC1_W16_to_32; break;
         case noWidening : FPCALL_TYPE = FPCALL_W16; break;
       }
       break;
     case 2 : 
       switch (widening) {
-        case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W32_to_64; break;
+        case vsWidening : FPCALL_TYPE = FPCALL_SRC1_W32_to_64; break;
         case noWidening : FPCALL_TYPE = FPCALL_W32; break;
       }
       break;
@@ -646,16 +649,13 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
       continue;
     }
     // operand - vs2
-    if (widening)
-      get_vreg(id_src2->reg, idx, s0, vtype->vsew+1, vtype->vlmul, 0, 1);
-    else
-      get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
+    get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, 0, 1);
 
 
     // op
     switch (opcode) {
       case FREDUSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
-      case FREDOSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
+      case FREDOSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_UADD, FPCALL_TYPE)); break;
       case FREDMIN : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MIN, FPCALL_TYPE)); break;
       case FREDMAX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MAX, FPCALL_TYPE)); break;
       //  case MIN : 
