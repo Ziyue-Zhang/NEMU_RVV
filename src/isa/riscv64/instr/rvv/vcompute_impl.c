@@ -403,8 +403,8 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       switch (widening) {
         case vsdWidening : FPCALL_TYPE = FPCALL_W16_to_32; break;
         case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W16_to_32; break;
+        case vdNarrow : FPCALL_TYPE = FPCALL_W32; break;
         case vdWidening :
-        case vdNarrow :
         case noWidening : FPCALL_TYPE = FPCALL_W16; break;
       }
       break;
@@ -412,8 +412,8 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       switch (widening) {
         case vsdWidening : FPCALL_TYPE = FPCALL_W32_to_64; break;
         case vsWidening : FPCALL_TYPE = FPCALL_SRC2_W32_to_64; break;
+        case vdNarrow : FPCALL_TYPE = FPCALL_W64; break;
         case vdWidening :
-        case vdNarrow :
         case noWidening : FPCALL_TYPE = FPCALL_W32; break;
       }
       break;
@@ -436,7 +436,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
     }
 
     // operand - vs2
-    if (widening == vsWidening)
+    if (widening == vsWidening || widening == vdNarrow)
       get_vreg(id_src2->reg, idx, s0, vtype->vsew+1, vtype->vlmul, is_signed, 1);
     else
       get_vreg(id_src2->reg, idx, s0, vtype->vsew, vtype->vlmul, is_signed, 1);
@@ -522,7 +522,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       case FNCVT_RTZ_XF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToST, FPCALL_TYPE)); break;
       case FNCVT_FXU : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DUToF, FPCALL_TYPE)); break;
       case FNCVT_FX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DSToF, FPCALL_TYPE)); break;
-      case FNCVT_FF : printf("%d\n", vtype->vsew); rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToF, FPCALL_TYPE)); break;
+      case FNCVT_FF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToF, FPCALL_TYPE)); break;
       case FNCVT_ROD_FF : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_DFToFR, FPCALL_TYPE)); break;
       case FSLIDE1UP :
         if (idx > 0) get_vreg(id_src2->reg, idx - 1, s1, vtype->vsew, vtype->vlmul, 0, 1);
@@ -536,8 +536,6 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
     else if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
-    else if (widening == vdNarrow)
-      set_vreg(id_dest->reg, idx, *s1, vtype->vsew-1, vtype->vlmul, 1);
     else
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
   }
@@ -655,7 +653,7 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
     // op
     switch (opcode) {
       case FREDUSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
-      case FREDOSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_UADD, FPCALL_TYPE)); break;
+      case FREDOSUM : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE)); break;
       case FREDMIN : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MIN, FPCALL_TYPE)); break;
       case FREDMAX : rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_MAX, FPCALL_TYPE)); break;
       //  case MIN : 
