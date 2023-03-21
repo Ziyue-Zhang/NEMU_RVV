@@ -547,6 +547,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
 
 void mask_instr(int opcode, Decode *s) {
   int idx;
+  set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx++) {
     // operand - vs2
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul); // unproper usage of s0
@@ -611,6 +612,7 @@ void reduction_instr(int opcode, int is_signed, int wide, Decode *s) {
     }
 
   }
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew+wide, vtype->vlmul, 0);
 }
 
