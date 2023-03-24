@@ -118,6 +118,7 @@ def_EHelper(vmsbc) {
 }
 
 def_EHelper(vmerge) {
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
   ARTHI(MERGE, SIGNED)
   // print_asm_template3(vmerge);
   // longjmp_raise_intr(EX_II);

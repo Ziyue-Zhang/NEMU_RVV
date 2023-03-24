@@ -107,7 +107,13 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         && opcode != MADC \
         && opcode != SBC \
         && opcode != MSBC \
-        && mask==0) continue;
+        && mask==0) {
+          if (dest_mask == 1)
+            continue;
+          *s1 = (uint64_t) -1;
+          set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
+          continue;
+        }
 
     } else {
       if(opcode == MERGE) {
@@ -378,15 +384,15 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
   }
 
-  // idx gt the vl need to be zeroed.
-  // int vlmax = ((VLEN >> 3) >> vtype->vsew) << vtype->vlmul;
-  // for(idx = vl->val; idx < vlmax; idx ++) {
-  //   rtl_li(s1, 0);
-  //   if(dest_mask == 1) 
-  //     set_mask(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul);
-  //   else 
-  //     set_vreg(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul, 1);
-  // }
+  if(vtype->vta) {
+    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    for(idx = vl->val; idx < vlmax; idx++) {
+      if (dest_mask == 1)
+        continue;
+      *s1 = (uint64_t) -1;
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
+    }
+  }
 
   // TODO: the idx larger than vl need reset to zero.
   rtl_li(s, s0, 0);
@@ -427,7 +433,17 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       // merge instr will exec no matter mask or not
       // masked and mask off exec will left dest unmodified.
       if(opcode != FMERGE \
-        && mask==0) continue;
+        && mask==0) {
+        if (dest_mask == 1)
+          continue;
+        *s1 = (uint64_t) -1;
+        if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
+          set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
+        else {
+          set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+        }
+        continue;
+      }
 
     } else {
       if(opcode == FMERGE) {
@@ -538,6 +554,19 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
     else
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+  }
+
+  if(vtype->vta) {
+    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    for(idx = vl->val; idx < vlmax; idx++) {
+      if (dest_mask == 1)
+        continue;
+      *s1 = (uint64_t) -1;
+      if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
+        set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
+      else
+        set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    }
   }
 
   // TODO: the idx larger than vl need reset to zero.
