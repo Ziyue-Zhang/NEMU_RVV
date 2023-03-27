@@ -94,12 +94,12 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
   int64_t int_min = INT64_MIN >> (64 - sew);
   uint64_t uint_max = UINT64_MAX >> (64 - sew);
   uint64_t sign_mask = UINT64_MAX << (64 - sew);
-  if(dest_mask) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    carry = mask;
+    carry = 0;
     if(s->vm == 0) {
+      carry = mask;
       // merge instr will exec no matter mask or not
       // masked and mask off exec will left dest unmodified.
       if(opcode != MERGE \
@@ -115,10 +115,9 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
           continue;
         }
 
-    } else {
-      if(opcode == MERGE) {
-        mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
-      }
+    }
+    if(opcode == MERGE) {
+      mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
     }
 
     // operand - vs2
@@ -393,6 +392,12 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
     }
   }
+  if(dest_mask) {
+    for (idx = vl->val; idx < VLEN; idx++) {
+      *s1 = 1;
+      set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+    }
+  }
 
   // TODO: the idx larger than vl need reset to zero.
   rtl_li(s, s0, 0);
@@ -425,7 +430,6 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       break;
     case 3 : FPCALL_TYPE = FPCALL_W64; break;
   }
-  if(dest_mask) set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx ++) {
     // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
@@ -568,6 +572,12 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
         set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
     }
   }
+  if(dest_mask) {
+    for (idx = vl->val; idx < VLEN; idx++) {
+      *s1 = 1;
+      set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+    }
+  }
 
   // TODO: the idx larger than vl need reset to zero.
   rtl_li(s, s0, 0);
@@ -576,7 +586,6 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
 
 void mask_instr(int opcode, Decode *s) {
   int idx;
-  set_vreg_tail(id_dest->reg);
   for(idx = vstart->val; idx < vl->val; idx++) {
     // operand - vs2
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul); // unproper usage of s0
@@ -605,6 +614,10 @@ void mask_instr(int opcode, Decode *s) {
     }
     // store to vrf
     *s1 &= 1; // make sure the LSB
+    set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+  }
+  for (idx = vl->val; idx < VLEN; idx++) {
+    *s1 = 1;
     set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
   }
 }
@@ -692,6 +705,7 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
     }
 
   }
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
   if (widening)
     set_vreg(id_dest->reg, 0, *s1, vtype->vsew+1, vtype->vlmul, 0);
   else
