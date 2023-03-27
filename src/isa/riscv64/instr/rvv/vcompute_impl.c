@@ -449,10 +449,9 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
         continue;
       }
 
-    } else {
-      if(opcode == FMERGE) {
-        mask = 1; // merge(mv) get the first operand (s1, rs1, vs2);
-      }
+    }
+    if(opcode == FMERGE) {
+      mask = 1; // merge(mv) get the first operand (s1, rs1, vs2);
     }
 
     // operand - vs2
