@@ -324,11 +324,15 @@ def_EHelper(vredmax) {
 }
 
 def_EHelper(vmvsx) {
-  if(vtype->vta) set_vreg_tail(id_dest->reg);
   rtl_lr(s, &(id_src->val), id_src1->reg, 4);
   rtl_mv(s, s1, &id_src->val); 
   rtl_sext(s, s1, s1, 1 << vtype->vsew);
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
+  if(vtype->vta) {
+    for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+    }
+  }
 }
 
 def_EHelper(vmvxs) {
@@ -398,8 +402,12 @@ def_EHelper(vmsbf) {
   bool first_one = false;
   for(int idx = vstart->val; idx < vl->val; idx ++) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    if(s->vm == 0 && mask == 0)
+    if(s->vm == 0 && mask == 0) {
+      if (vtype->vma) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
       continue;
+    }
     
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
     *s0 &= 1;
@@ -414,6 +422,9 @@ def_EHelper(vmsbf) {
       set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
     }
   }
+  for (int idx = vl->val; idx < VLEN; idx++) {
+    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  }
 }
 
 def_EHelper(vmsof) {
@@ -423,8 +434,12 @@ def_EHelper(vmsof) {
   bool first_one = false;
   for(int idx = vstart->val; idx < vl->val; idx ++) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    if(s->vm == 0 && mask == 0)
+    if(s->vm == 0 && mask == 0) {
+      if (vtype->vma) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
       continue;
+    }
     
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
     *s0 &= 1;
@@ -436,6 +451,9 @@ def_EHelper(vmsof) {
     }
     set_mask(id_dest->reg, idx, 0, vtype->vsew, vtype->vlmul);
   }
+  for (int idx = vl->val; idx < VLEN; idx++) {
+    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  }
 }
 
 def_EHelper(vmsif) {
@@ -445,8 +463,12 @@ def_EHelper(vmsif) {
   bool first_one = false;
   for(int idx = vstart->val; idx < vl->val; idx ++) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    if(s->vm == 0 && mask == 0)
+    if(s->vm == 0 && mask == 0) {
+      if (vtype->vma) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
       continue;
+    }
     
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
     *s0 &= 1;
@@ -461,6 +483,9 @@ def_EHelper(vmsif) {
       first_one = true;
     }
   }
+  for (int idx = vl->val; idx < VLEN; idx++) {
+    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  }
 }
 
 def_EHelper(viota) {
@@ -470,8 +495,12 @@ def_EHelper(viota) {
   rtl_li(s, s1, 0);
   for(int idx = vstart->val; idx < vl->val; idx ++) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
-    if(s->vm == 0 && mask == 0)
+    if(s->vm == 0 && mask == 0) {
+      if (vtype->vma) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
       continue;
+    }
     
     *s0 = get_mask(id_src2->reg, idx, vtype->vsew, vtype->vlmul);
     *s0 &= 1;
@@ -481,6 +510,9 @@ def_EHelper(viota) {
     if(*s0 == 1) {
       rtl_addi(s, s1, s1, 1);
     }
+  }
+  for (int idx = vl->val; idx < VLEN; idx++) {
+    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
   }
 }
 

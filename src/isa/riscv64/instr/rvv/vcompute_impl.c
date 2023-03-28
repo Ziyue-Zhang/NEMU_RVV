@@ -108,10 +108,16 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         && opcode != SBC \
         && opcode != MSBC \
         && mask==0) {
-          if (dest_mask == 1)
+          if (dest_mask == 1) {
+            if (vtype->vma) {
+              set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+            }
             continue;
-          *s1 = (uint64_t) -1;
-          set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
+          }
+          if (vtype->vma) {
+            *s1 = (uint64_t) -1;
+            set_vreg(id_dest->reg, idx, *s1, vtype->vsew+widening, vtype->vlmul, 1);
+          }
           continue;
         }
 
@@ -394,8 +400,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
   }
   if(dest_mask) {
     for (idx = vl->val; idx < VLEN; idx++) {
-      *s1 = 1;
-      set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
     }
   }
 
@@ -573,8 +578,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
   }
   if(dest_mask) {
     for (idx = vl->val; idx < VLEN; idx++) {
-      *s1 = 1;
-      set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
     }
   }
 
@@ -616,8 +620,7 @@ void mask_instr(int opcode, Decode *s) {
     set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
   }
   for (idx = vl->val; idx < VLEN; idx++) {
-    *s1 = 1;
-    set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
+    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
   }
 }
 
