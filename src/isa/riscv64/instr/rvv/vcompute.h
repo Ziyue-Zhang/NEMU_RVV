@@ -356,7 +356,7 @@ def_EHelper(vmvnr) {
     }
 }
 
-def_EHelper(vcpop) {
+def_EHelper(vpopc) {
   // longjmp_raise_intr(EX_II);
   if(vstart->val != 0)
     longjmp_raise_intr(EX_II);
