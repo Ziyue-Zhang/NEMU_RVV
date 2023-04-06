@@ -107,6 +107,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         && opcode != MADC \
         && opcode != SBC \
         && opcode != MSBC \
+        && opcode != SLIDEUP \
         && mask==0) {
           if (dest_mask == 1) {
             if (vtype->vma) {
@@ -139,7 +140,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case SRC_VX :   
         rtl_lr(s, &(id_src->val), id_src1->reg, 4);
         rtl_mv(s, s1, &id_src->val); 
-        if(opcode != RGATHER && opcode != RGATHEREI16) {
+        if(opcode != RGATHER && opcode != RGATHEREI16 && opcode != SLIDEUP && opcode != SLIDEDOWN) {
           switch (vtype->vsew) {
             case 0 : *s1 = *s1 & 0xff; break;
             case 1 : *s1 = *s1 & 0xffff; break;
@@ -157,6 +158,14 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
 
     shift = *s1 & (sew - 1);
     narrow_shift = *s1 & (sew * 2 - 1);
+
+    if (opcode == SLIDEUP) {
+      if(s->vm == 0 && mask == 0 && vtype->vma && (uint64_t)idx >= (uint64_t)*s1) {
+        *s2 = (uint64_t) -1;
+        set_vreg(id_dest->reg, idx, *s2, vtype->vsew+widening, vtype->vlmul, 1);
+        continue;
+      }
+    }
 
     // op
     switch (opcode) {
@@ -298,11 +307,11 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case MSGTU : rtl_setrelop(s, RELOP_GTU, s1, s0, s1); break;
       case MSGT  : rtl_setrelop(s, RELOP_GT,  s1, s0, s1); break;
       case SLIDEUP :
-        if (idx >= *s1) get_vreg(id_src2->reg, idx - *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        if ((uint64_t)idx >= (uint64_t)*s1) get_vreg(id_src2->reg, idx - *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
         else get_vreg(id_dest->reg, idx, s1, vtype->vsew, vtype->vlmul, 0, 1);
         break;
       case SLIDEDOWN :
-        if (idx + *s1 < vlmax) get_vreg(id_src2->reg, idx + *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
+        if ((uint64_t)idx + (uint64_t)*s1 < (uint64_t)vlmax) get_vreg(id_src2->reg, idx + *s1, s1, vtype->vsew, vtype->vlmul, 0, 1);
         else rtl_li(s, s1, 0);
         break;
       case SLIDE1UP :
