@@ -467,7 +467,7 @@ def_THelper(vsetvl_dispatch) {
 
 // All RVV instructions decode start from here
 def_THelper(OP_V) { // 10_101
-  //printf("pc : 0x%lx\n", cpu.pc);
+  //printf("PC : 0x%lx\n", cpu.pc);
   switch (s->isa.instr.i.funct3) {
     case 0 : s->src_vmode = SRC_VV; break;
     case 1 : s->src_vmode = SRC_VV; break;

@@ -176,7 +176,7 @@ def_EHelper(vmsgt) {
 }
 
 def_EHelper(vsaddu) {
-  ARTHI(SADDU, UNSIGNED)
+  ARTHI(SADDU, SIGNED)
 }
 
 def_EHelper(vsadd) {
@@ -206,11 +206,11 @@ def_EHelper(vsll) {
 }
 
 def_EHelper(vasub) {
-  ARTHI(AADD, SIGNED)
+  ARTHI(ASUB, SIGNED)
 }
 
 def_EHelper(vasubu) {
-  ARTHI(AADD, UNSIGNED)
+  ARTHI(ASUB, UNSIGNED)
 }
 
 def_EHelper(vsmul) {
@@ -234,7 +234,7 @@ def_EHelper(vssrl) {
 }
 
 def_EHelper(vssra) {
-  ARTHI(SSRA, UNSIGNED)
+  ARTHI(SSRA, SIGNED)
 }
 
 def_EHelper(vnsrl) {
@@ -250,7 +250,7 @@ def_EHelper(vnclipu) {
 }
 
 def_EHelper(vnclip) {
-  ARTHI_NARROW(NCLIP, UNSIGNED, 1)
+  ARTHI_NARROW(NCLIP, SIGNED, 1)
 }
 
 def_EHelper(vwredsumu) {
