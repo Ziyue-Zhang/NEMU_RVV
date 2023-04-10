@@ -176,7 +176,7 @@ def_EHelper(vmsgt) {
 }
 
 def_EHelper(vsaddu) {
-  ARTHI(SADDU, SIGNED)
+  ARTHI(SADDU, UNSIGNED)
 }
 
 def_EHelper(vsadd) {

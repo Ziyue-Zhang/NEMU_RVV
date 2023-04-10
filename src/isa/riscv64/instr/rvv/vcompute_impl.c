@@ -88,6 +88,10 @@ typedef __int128_t int128_t;
         if (signed && vd == 0x8000000000000000) vd = 0; \
     })
 
+static inline void update_vcsr() {
+  vcsr->val = (vxrm->val) << 1 | vxsat->val;
+}
+
 void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int dest_mask, Decode *s) {
   int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
   int idx;
@@ -339,10 +343,15 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         else rtl_li(s, s1, 0);
         break;
       case SADDU :
+        *s2 = *s1;
         rtl_add(s, s1, s0, s1);
         sat = 0;
-        if (*s1 < *s0) {rtl_li(s, s1, ~0lu); sat = 1;}
-        vxsat->val = sat;
+        for (int i = 0; i < (8 << vtype->vsew); i++) {
+            carry = (((*s0 >> i) & 1) + ((*s2 >> i) & 1) + carry) >> 1;
+            carry &= 1;
+        }
+        if (carry) {rtl_li(s, s1, ~0lu); sat = 1;}
+        vxsat->val |= sat;
         break;
       case SSUBU :
         switch (vtype->vsew) {
@@ -351,7 +360,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
           case 2 : *s1 = SAT_SUBU(uint32_t, *s0, *s1, &sat); break;
           case 3 : *s1 = SAT_SUBU(uint64_t, *s0, *s1, &sat); break;
         }
-        vxsat->val = sat;
+        vxsat->val |= sat;
         break;
       case SADD :
         switch (vtype->vsew) {
@@ -360,7 +369,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
           case 2 : *s1 = SAT_ADD(int32_t, uint32_t, *s0, *s1, &sat); break;
           case 3 : *s1 = SAT_ADD(int64_t, uint64_t, *s0, *s1, &sat); break;
         }
-        vxsat->val = sat;
+        vxsat->val |= sat;
         break;
       case SSUB :
         switch (vtype->vsew) {
@@ -369,7 +378,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
           case 2 : *s1 = SAT_SUB(int32_t, uint32_t, *s0, *s1, &sat); break;
           case 3 : *s1 = SAT_SUB(int64_t, uint64_t, *s0, *s1, &sat); break;
         }
-        vxsat->val = sat;
+        vxsat->val |= sat;
         break;
       case AADD : ROUNDING(+, *s1, *s0, *s1, is_signed); break;
       case ASUB : ROUNDING(-, *s1, *s0, *s1, is_signed); break;
@@ -378,7 +387,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         i128_result = (int128_t)(int64_t)*s1 * (int128_t)(int64_t)*s0;
         INT_ROUNDING(i128_result, vxrm->val, sew - 1);
         i128_result = i128_result >> (sew - 1);
-        if (overflow) { *s1 = int_max; vxsat->val = 1; }
+        if (overflow) { *s1 = int_max; vxsat->val |= 1; }
         else *s1 = (int64_t)i128_result;
         break;
       case SSRL :
@@ -395,8 +404,8 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         i128_result = (int128_t)(int64_t)*s0;
         INT_ROUNDING(i128_result, vxrm->val, narrow_shift);
         i128_result >>= narrow_shift;
-        if (i128_result > int_max) { i128_result = int_max; vxsat->val = 1;}
-        else if (i128_result < int_min) { i128_result = int_min; vxsat->val = 1;}
+        if (i128_result > int_max) { i128_result = int_max; vxsat->val |= 1; }
+        else if (i128_result < int_min) { i128_result = int_min; vxsat->val |= 1; }
         *s1 = (int64_t)i128_result;
         break;
       case NCLIPU :
@@ -405,12 +414,12 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         u128_result >>= narrow_shift;
         if (u128_result & sign_mask) {
           u128_result = uint_max;
-          vxsat->val = 1;
+          vxsat->val |= 1;
         }
         *s1 = (uint64_t) u128_result;
         break;
     }
-
+    update_vcsr();
     // store to vrf
     if(dest_mask == 1) 
       set_mask(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul);
