@@ -33,7 +33,7 @@ rtlreg_t check_vsetvl(rtlreg_t vtype_req, rtlreg_t vl_req, int mode) {
   rtlreg_t old_vl;
   vcsr_read(IDXVL, &old_vl);
   vtype_t vt = (vtype_t )vtype_req;
-  rtlreg_t VLMAX = VLEN >> (3 + vt.vsew - vt.vlmul);
+  rtlreg_t VLMAX = get_vlmax(vt.vsew, vt.vlmul);
 
   if (mode == 1) {
     return VLMAX;
@@ -73,6 +73,7 @@ void set_mask(uint32_t reg, int idx, uint64_t mask, uint64_t vsew, uint64_t vlmu
 }
 
 int get_vlmax(int vsew, int vlmul) {
+  if (vlmul > 4) vlmul -= 8;
   return VLEN >> (3 + vsew - vlmul);
 }
 
@@ -89,9 +90,10 @@ int get_idx(uint64_t reg, int idx, uint64_t vsew) {
 }
 
 void get_vreg(uint64_t reg, int idx, rtlreg_t *dst, uint64_t vsew, uint64_t vlmul, int is_signed, int needAlign) {
-  Assert(vlmul <= 3, "vlmul should be less than 4\n");
+  // printf("get_vreg: reg = %lu, idx = %d, vsew = %lu, vlmul = %lu, is_signed = %d, needAlign = %d\n", reg, idx, vsew, vlmul, is_signed, needAlign);
+  Assert(vlmul != 4, "vlmul = 4 is reserved\n");
   Assert(vsew <= 3, "vsew should be less than 4\n");
-  if(needAlign) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
+  if(needAlign && vlmul < 4) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
   int new_reg = get_reg(reg, idx, vsew);
   int new_idx = get_idx(reg, idx, vsew);
   switch (vsew) {
@@ -104,9 +106,10 @@ void get_vreg(uint64_t reg, int idx, rtlreg_t *dst, uint64_t vsew, uint64_t vlmu
 }
 
 void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul, int needAlign) {
-  Assert(vlmul <= 3, "vlmul should be less than 4\n");
+  // printf("set_vreg: reg = %lu, idx = %d, vsew = %lu, vlmul = %lu, needAlign = %d\n", reg, idx, vsew, vlmul, needAlign);
+  Assert(vlmul != 4, "vlmul = 4 is reserved\n");
   Assert(vsew <= 3, "vsew should be less than 4\n");
-  if(needAlign) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
+  if(needAlign && vlmul < 4) Assert(reg % (1 << vlmul) == 0, "vreg is not aligned\n");
   int new_reg = get_reg(reg, idx, vsew);
   int new_idx = get_idx(reg, idx, vsew);
 

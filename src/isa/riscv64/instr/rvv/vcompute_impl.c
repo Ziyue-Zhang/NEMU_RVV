@@ -153,15 +153,15 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case SRC_VX :   
         rtl_lr(s, &(id_src->val), id_src1->reg, 4);
         rtl_mv(s, s1, &id_src->val); 
-        if(opcode != RGATHER && opcode != RGATHEREI16 && opcode != SLIDEUP && opcode != SLIDEDOWN) {
+        if(opcode != RGATHER && opcode != RGATHEREI16 && opcode != SLIDEUP && opcode != SLIDEDOWN && opcode != AADD) {
           switch (vtype->vsew) {
             case 0 : *s1 = *s1 & 0xff; break;
             case 1 : *s1 = *s1 & 0xffff; break;
             case 2 : *s1 = *s1 & 0xffffffff; break;
             case 3 : *s1 = *s1 & 0xffffffffffffffff; break;
           }
+          if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
         }
-        if(is_signed) rtl_sext(s, s1, s1, 1 << vtype->vsew);
         break;
       case SRC_VI :
         if(is_signed) rtl_li(s, s1, s->isa.instr.v_opv2.v_simm5);
