@@ -497,7 +497,9 @@ def_EHelper(viota) {
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
     if(s->vm == 0 && mask == 0) {
       if (vtype->vma) {
-        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+        *s2 = (uint64_t) -1;
+        set_vreg(id_dest->reg, idx, *s2, vtype->vsew, vtype->vlmul, 1);
+        continue;
       }
       continue;
     }
@@ -511,8 +513,12 @@ def_EHelper(viota) {
       rtl_addi(s, s1, s1, 1);
     }
   }
-  for (int idx = vl->val; idx < VLEN; idx++) {
-    set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  if(vtype->vta) {
+    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    for(int idx = vl->val; idx < vlmax; idx++) {
+      *s1 = (uint64_t) -1;
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    }
   }
 }
 
@@ -521,11 +527,24 @@ def_EHelper(vid) {
         // mask
     rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
     // Masking does not change the index value written to active elements.
-    if(s->vm == 0 && mask == 0)
+    if(s->vm == 0 && mask == 0) {
+      if (vtype->vma) {
+        *s2 = (uint64_t) -1;
+        set_vreg(id_dest->reg, idx, *s2, vtype->vsew, vtype->vlmul, 1);
+        continue;
+      }
       continue;
+    }
 
     rtl_li(s, s1, idx);
     set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+  }
+  if(vtype->vta) {
+    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    for(int idx = vl->val; idx < vlmax; idx++) {
+      *s1 = (uint64_t) -1;
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    }
   }
 }
 

@@ -27,6 +27,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
   s->v_width = s->v_width == 0 ? 1 << vtype->vsew : s->v_width;
   bool error = (s->v_width * 8) > (8 << vtype->vsew);
   if(error) {
+    // printf("s->v_width: %d, vtype->vsew: %d\n", s->v_width, vtype->vsew);
     printf("vld encounter an instr: v_width > SEW: mode::%d is_signed:%d\n", mode, is_signed);
     longjmp_raise_intr(EX_II);
   }
@@ -58,6 +59,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
     switch (mode) {
       case MODE_UNIT   : rtl_addi(s, &tmp_reg[0], &tmp_reg[0], s->v_width); break;
       case MODE_STRIDED: rtl_add(s, &tmp_reg[0], &tmp_reg[0], &id_src2->val) ; break;
+      //default : assert(0);
     }
   }
 
@@ -123,6 +125,7 @@ void vst(int mode, Decode *s, int mmu_mode) {
     switch (mode) {
       case MODE_UNIT   : rtl_addi(s, &tmp_reg[0], &tmp_reg[0], s->v_width); break;
       case MODE_STRIDED: rtl_add(s, &tmp_reg[0], &tmp_reg[0], &id_src2->val) ; break;
+      //default : assert(0);
     }
   }
   // TODO: the idx larger than vl need reset to zero.

@@ -153,7 +153,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
       case SRC_VX :   
         rtl_lr(s, &(id_src->val), id_src1->reg, 4);
         rtl_mv(s, s1, &id_src->val); 
-        if(opcode != RGATHER && opcode != RGATHEREI16 && opcode != SLIDEUP && opcode != SLIDEDOWN && opcode != AADD) {
+        if(opcode != RGATHER && opcode != RGATHEREI16 && opcode != SLIDEUP && opcode != SLIDEDOWN) {
           switch (vtype->vsew) {
             case 0 : *s1 = *s1 & 0xff; break;
             case 1 : *s1 = *s1 & 0xffff; break;
