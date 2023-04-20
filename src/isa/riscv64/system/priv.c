@@ -192,7 +192,7 @@ static inline word_t csr_read(word_t *src) {
   else if (is_read(sip))    { difftest_skip_ref(); return mip->val & SIP_MASK; }
 #ifdef CONFIG_RVV
   else if (is_read(vcsr))   { return (vxrm->val & 0x3) << 1 | (vxsat->val & 0x1); }
-  else if (is_read(vlenb))  { return VLEN; }
+  else if (is_read(vlenb))  { return VLEN >> 3; }
 #endif
   else if (is_read(fcsr))   {
 #ifdef CONFIG_FPU_NONE

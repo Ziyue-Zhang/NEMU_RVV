@@ -25,12 +25,6 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
   //        2  ->  16           2  ->  32
   //        4  ->  32           3  ->  64
   s->v_width = s->v_width == 0 ? 1 << vtype->vsew : s->v_width;
-  bool error = (s->v_width * 8) > (8 << vtype->vsew);
-  if(error) {
-    // printf("s->v_width: %d, vtype->vsew: %d\n", s->v_width, vtype->vsew);
-    printf("vld encounter an instr: v_width > SEW: mode::%d is_signed:%d\n", mode, is_signed);
-    longjmp_raise_intr(EX_II);
-  }
   // previous decode does not load vals for us 
   rtl_lr(s, &(s->src1.val), s->src1.reg, 4);
 
