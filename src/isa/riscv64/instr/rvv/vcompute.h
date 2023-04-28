@@ -590,6 +590,13 @@ def_EHelper(vcompress) {
     
     rtl_addi(s, s1, s1, 1);
   }
+  if(vtype->vta) {
+    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    for(int idx = *s1; idx < vlmax; idx++) {
+      *s1 = (uint64_t) -1;
+      set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+    }
+  }
 }
 
 def_EHelper(vmandnot) {
