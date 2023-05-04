@@ -136,7 +136,7 @@ void arthimetic_instr(int opcode, int is_signed, int widening, int narrow, int d
         }
 
     }
-    if(opcode == MERGE) {
+    if(s->vm == 1 && opcode == MERGE) {
       mask = 1; // merge(mv) get the first operand (s1, rs1, imm);
     }
 
@@ -494,7 +494,7 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       }
 
     }
-    if(opcode == FMERGE) {
+    if(s->vm == 1 && opcode == FMERGE) {
       mask = 1; // merge(mv) get the first operand (s1, rs1, vs2);
     }
 
