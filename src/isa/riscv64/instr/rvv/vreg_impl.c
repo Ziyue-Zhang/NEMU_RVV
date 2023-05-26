@@ -77,6 +77,11 @@ int get_vlmax(int vsew, int vlmul) {
   return VLEN >> (3 + vsew - vlmul);
 }
 
+int get_vlen_max(int vsew, int vlmul) {
+  if (vlmul > 4) vlmul = 0;
+  return VLEN >> (3 + vsew - vlmul);
+}
+
 int get_reg(uint64_t reg, int idx, uint64_t vsew) {
   int elem_num = VLEN >> (3 + vsew);
   int reg_off = idx / elem_num;

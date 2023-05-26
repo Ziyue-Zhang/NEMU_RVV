@@ -324,6 +324,7 @@ def_EHelper(vredmax) {
 }
 
 def_EHelper(vmvsx) {
+  if (vstart->val >= vl->val) return;
   rtl_lr(s, &(id_src->val), id_src1->reg, 4);
   rtl_mv(s, s1, &id_src->val); 
   rtl_sext(s, s1, s1, 1 << vtype->vsew);
@@ -336,13 +337,14 @@ def_EHelper(vmvsx) {
 }
 
 def_EHelper(vmvxs) {
+  if (vstart->val >= vl->val) return;
   get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
   rtl_sext(s, s0, s0, 1 << 3);
   rtl_sr(s, id_dest->reg, s0, 4);
 }
 
 def_EHelper(vmvnr) {
-    rtl_li(s, s1, s->isa.instr.v_opv3.v_imm5 );
+    rtl_li(s, s1, s->isa.instr.v_opv3.v_imm5);
     int NREG = (*s1) + 1;
     int len = (VLEN >> 6) * NREG;
     int vlmul = 0;
@@ -514,7 +516,7 @@ def_EHelper(viota) {
     }
   }
   if(vtype->vta) {
-    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    int vlmax = get_vlen_max(vtype->vsew, vtype->vlmul);
     for(int idx = vl->val; idx < vlmax; idx++) {
       *s1 = (uint64_t) -1;
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
@@ -540,7 +542,7 @@ def_EHelper(vid) {
     set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
   }
   if(vtype->vta) {
-    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    int vlmax = get_vlen_max(vtype->vsew, vtype->vlmul);
     for(int idx = vl->val; idx < vlmax; idx++) {
       *s1 = (uint64_t) -1;
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
@@ -591,7 +593,7 @@ def_EHelper(vcompress) {
     rtl_addi(s, s1, s1, 1);
   }
   if(vtype->vta) {
-    int vlmax = get_vlmax(vtype->vsew, vtype->vlmul);
+    int vlmax = get_vlen_max(vtype->vsew, vtype->vlmul);
     for(int idx = *s1; idx < vlmax; idx++) {
       *s1 = (uint64_t) -1;
       set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
@@ -840,6 +842,7 @@ def_EHelper(vfslide1down) {
 }
 
 def_EHelper(vfmvfs) {
+  if (vstart->val >= vl->val) return;
   get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
   if (vtype->vsew < 3) {
       *s0 = *s0 | (UINT64_MAX << (8 << vtype->vsew));
@@ -848,9 +851,14 @@ def_EHelper(vfmvfs) {
 }
 
 def_EHelper(vfmvsf) {
-  if(vtype->vta) set_vreg_tail(id_dest->reg);
+  if (vstart->val >= vl->val) return;
   rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
   set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
+  if(vtype->vta) {
+    for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
+      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+    }
+  }
 }
 
 def_EHelper(vfcvt_xufv) {
