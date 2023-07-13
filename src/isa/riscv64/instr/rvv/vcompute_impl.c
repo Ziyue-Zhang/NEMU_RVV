@@ -482,13 +482,18 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
       // masked and mask off exec will left dest unmodified.
       if(opcode != FMERGE \
         && mask==0) {
-        if (dest_mask == 1)
+        if (dest_mask == 1) {
+          if (vtype->vma) {
+            set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+          }
           continue;
-        *s1 = (uint64_t) -1;
-        if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
-          set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
-        else {
-          set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
+        }
+        if (vtype->vma) {
+          *s1 = (uint64_t) -1;
+          if (widening == vsdWidening || widening == vdWidening || widening == vsWidening)
+            set_vreg(id_dest->reg, idx, *s1, vtype->vsew+1, vtype->vlmul, 1);
+          else
+            set_vreg(id_dest->reg, idx, *s1, vtype->vsew, vtype->vlmul, 1);
         }
         continue;
       }
