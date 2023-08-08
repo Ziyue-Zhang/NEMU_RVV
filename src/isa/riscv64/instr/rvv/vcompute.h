@@ -324,23 +324,25 @@ def_EHelper(vredmax) {
 }
 
 def_EHelper(vmvsx) {
-  if (vstart->val >= vl->val) return;
-  rtl_lr(s, &(id_src->val), id_src1->reg, 4);
-  rtl_mv(s, s1, &id_src->val); 
-  rtl_sext(s, s1, s1, 1 << vtype->vsew);
-  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
-  if(vtype->vta) {
-    for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
-      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  if (vstart->val < vl->val) {
+    rtl_lr(s, &(id_src->val), id_src1->reg, 4);
+    rtl_mv(s, s1, &id_src->val); 
+    rtl_sext(s, s1, s1, 1 << vtype->vsew);
+    set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
+    if(vtype->vta) {
+      for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
     }
   }
 }
 
 def_EHelper(vmvxs) {
-  if (vstart->val >= vl->val) return;
-  get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
-  rtl_sext(s, s0, s0, 1 << 3);
-  rtl_sr(s, id_dest->reg, s0, 4);
+  if (vstart->val < vl->val) {
+    get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
+    rtl_sext(s, s0, s0, 1 << 3);
+    rtl_sr(s, id_dest->reg, s0, 4);
+  }
 }
 
 def_EHelper(vmvnr) {
@@ -842,21 +844,23 @@ def_EHelper(vfslide1down) {
 }
 
 def_EHelper(vfmvfs) {
-  if (vstart->val >= vl->val) return;
-  get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
-  if (vtype->vsew < 3) {
-      *s0 = *s0 | (UINT64_MAX << (8 << vtype->vsew));
+  if (vstart->val < vl->val) {
+    get_vreg(id_src2->reg, 0, s0, vtype->vsew, vtype->vlmul, 1, 1);
+    if (vtype->vsew < 3) {
+        *s0 = *s0 | (UINT64_MAX << (8 << vtype->vsew));
+    }
+    rtl_mv(s, &fpreg_l(id_dest->reg), s0);
   }
-  rtl_mv(s, &fpreg_l(id_dest->reg), s0);
 }
 
 def_EHelper(vfmvsf) {
-  if (vstart->val >= vl->val) return;
-  rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
-  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
-  if(vtype->vta) {
-    for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
-      set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+  if (vstart->val < vl->val) {
+    rtl_mv(s, s1, &fpreg_l(id_src1->reg)); // f[rs1]
+    set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 1);
+    if(vtype->vta) {
+      for (int idx = 8 << vtype->vsew; idx < VLEN; idx++) {
+        set_mask(id_dest->reg, idx, 1, vtype->vsew, vtype->vlmul);
+      }
     }
   }
 }
