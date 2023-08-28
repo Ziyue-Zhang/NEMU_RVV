@@ -68,6 +68,7 @@ typedef struct Decode {
   #ifdef CONFIG_RVV
   // for vector
   int v_width;
+  int v_nf;
   uint32_t vm;
   uint32_t src_vmode;
   rtlreg_t tmp_reg[4];

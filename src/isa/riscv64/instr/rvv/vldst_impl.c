@@ -30,7 +30,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
 
   word_t idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
-  for(idx = vstart->val; idx < vl->val; idx ++) {
+  for(idx = vstart->val; idx < vl->val*(s->v_nf+1); idx ++) {
     //TODO: SEW now only supports LE 64bit
     //TODO: need special rtl function, but here ignore it
     if(mode == MODE_INDEXED) {
@@ -78,7 +78,7 @@ void vst(int mode, Decode *s, int mmu_mode) {
 
   word_t idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
-  for(idx = vstart->val; idx < vl->val; idx ++) {
+  for(idx = vstart->val; idx < vl->val*(s->v_nf+1); idx ++) {
     //TODO: SEW now only supports LE 64bit
     //TODO: need special rtl function, but here ignore it
     if(mode == MODE_INDEXED) {
