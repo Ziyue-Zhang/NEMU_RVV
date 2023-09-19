@@ -133,6 +133,57 @@ void set_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew, uint64_t vlmul
   }
 }
 
+void init_tmp_vreg() {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < VLEN / 64; j++) {
+      tmp_vreg[i]._64[j] = 0;
+    }
+  }
+}
+
+void get_tmp_vreg(uint64_t reg, int idx, rtlreg_t *dst, uint64_t vsew) {
+  // printf("get_vreg: reg = %lu, idx = %d, vsew = %lu\n", reg, idx, vsew);
+  Assert(vsew <= 3, "vsew should be less than 4\n");
+  switch (vsew) {
+    case 0 : *dst = tmp_vreg[reg]._8[idx];  break;
+    case 1 : *dst = tmp_vreg[reg]._16[idx]; break;
+    case 2 : *dst = tmp_vreg[reg]._32[idx]; break;
+    case 3 : *dst = tmp_vreg[reg]._64[idx]; break;
+  }
+  //printf("get_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx\n", reg, idx, new_reg, new_idx, *dst);
+}
+
+void set_tmp_vreg(uint64_t reg, int idx, rtlreg_t src, uint64_t vsew) {
+  // printf("set_vreg: reg = %lu, idx = %d, vsew = %lu\n", reg, idx, vsew);
+  Assert(vsew <= 3, "vsew should be less than 4\n");
+
+  switch (vsew) {
+    case 0 : src = src & 0xff; break;
+    case 1 : src = src & 0xffff; break;
+    case 2 : src = src & 0xffffffff; break;
+    case 3 : src = src & 0xffffffffffffffff; break;
+  }
+  //printf("set_reg: %lu idx: %d new_reg: %d new_idx: %d src: %lx vsew: %lu\n", reg, idx, new_reg, new_idx, src, vsew);
+  switch (vsew) {
+    case 0 : tmp_vreg[reg]._8[idx]  = (uint8_t  )src; break;
+    case 1 : tmp_vreg[reg]._16[idx] = (uint16_t )src; break;
+    case 2 : tmp_vreg[reg]._32[idx] = (uint32_t )src; break;
+    case 3 : tmp_vreg[reg]._64[idx] = (uint64_t )src; break;
+  }
+}
+
+void vreg_to_tmp_vreg(uint64_t reg, int idx, uint64_t vsew) {
+  int new_reg = get_reg(reg, idx, vsew);
+  int new_idx = get_idx(reg, idx, vsew);
+
+  switch (vsew) {
+    case 0 : tmp_vreg[new_reg - reg]._8[new_idx] = vreg_b(new_reg, new_idx); break;
+    case 1 : tmp_vreg[new_reg - reg]._16[new_idx] = vreg_s(new_reg, new_idx); break;
+    case 2 : tmp_vreg[new_reg - reg]._32[new_idx] = vreg_i(new_reg, new_idx); break;
+    case 3 : tmp_vreg[new_reg - reg]._64[new_idx] = vreg_l(new_reg, new_idx); break;
+  } 
+}
+
 void set_vreg_tail(uint64_t reg) {
   for (int i = 0; i < VLEN / 64; i++) {
     vreg_l(reg, i) = 0xffffffffffffffff;

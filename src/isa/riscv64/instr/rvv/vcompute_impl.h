@@ -76,6 +76,9 @@ void floating_arthimetic_instr(int opcode, int is_signed, int widening, int dest
 void mask_instr(int opcode, Decode *s);
 void reduction_instr(int opcode, int is_signed, int wide, Decode *s);
 void float_reduction_instr(int opcode, int widening, Decode *s);
+void float_reduction_step1(uint64_t src1, uint64_t src2, Decode *s);
+void float_reduction_step2(uint64_t src, Decode *s);
+void float_reduction_computing(Decode *s);
 
 #define ARTHI(opcode, is_signed) arthimetic_instr(opcode, is_signed, 0, 0, 0, s);
 #define ARTHI_WIDE(opcode, is_signed) arthimetic_instr(opcode, is_signed, 1, 0, 0, s);

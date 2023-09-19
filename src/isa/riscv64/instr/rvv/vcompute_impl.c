@@ -27,6 +27,8 @@
 #define s2    (&tmp_reg[2])
 #define s3    (&tmp_reg[3])
 
+rtlvreg_t tmp_vreg[8];
+
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 
@@ -756,6 +758,112 @@ void float_reduction_instr(int opcode, int widening, Decode *s) {
     set_vreg(id_dest->reg, 0, *s1, vtype->vsew+1, vtype->vlmul, 0);
   else
     set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 0);
+}
+
+void float_reduction_step2(uint64_t src, Decode *s) {
+  word_t FPCALL_TYPE;
+
+  // fpcall type
+  switch (vtype->vsew) {
+    case 0 : panic("f8 not supported"); break;
+    case 1 : FPCALL_TYPE = FPCALL_W16; break;
+    case 2 : FPCALL_TYPE = FPCALL_W32; break;
+    case 3 : FPCALL_TYPE = FPCALL_W64; break;
+  }
+
+  int element_num = VLEN >> (3 + vtype->vsew);
+
+  while (element_num != 1) {
+    for (int i = 0; i < element_num / 2; i += 2) {
+      get_tmp_vreg(src, i, s1, vtype->vsew);
+      get_tmp_vreg(src, i + element_num / 2, s0, vtype->vsew);
+      rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE));
+      set_tmp_vreg(src, i, *s1, vtype->vsew);
+    }
+    element_num >>= 1;
+  }
+}
+
+void float_reduction_step1(uint64_t src1, uint64_t src2, Decode *s) {
+  word_t FPCALL_TYPE;
+
+  // fpcall type
+  switch (vtype->vsew) {
+    case 0 : panic("f8 not supported"); break;
+    case 1 : FPCALL_TYPE = FPCALL_W16; break;
+    case 2 : FPCALL_TYPE = FPCALL_W32; break;
+    case 3 : FPCALL_TYPE = FPCALL_W64; break;
+  }
+
+  int element_num = VLEN >> (3 + vtype->vsew);
+
+  for (int i = 0; i < element_num; i++) {
+    get_tmp_vreg(src1, i, s1, vtype->vsew);
+    get_tmp_vreg(src2, i, s0, vtype->vsew);
+    rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE));
+    set_tmp_vreg(src1, i, *s1, vtype->vsew);
+  }
+}
+
+void float_reduction_computing(Decode *s) {
+  word_t FPCALL_TYPE;
+  int idx;
+
+  // fpcall type
+  switch (vtype->vsew) {
+    case 0 : panic("f8 not supported"); break;
+    case 1 : FPCALL_TYPE = FPCALL_W16; break;
+    case 2 : FPCALL_TYPE = FPCALL_W32; break;
+    case 3 : FPCALL_TYPE = FPCALL_W64; break;
+  }
+
+  // copy the vector register to the temp register
+  init_tmp_vreg();
+  for(idx = vstart->val; idx < vl->val; idx ++) {
+    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+    if(s->vm == 0 && mask==0) {
+      continue;
+    }
+    vreg_to_tmp_vreg(id_src2->reg, idx, vtype->vsew);
+  }
+
+  // computing the reduction result
+  switch (vtype->vlmul) {
+    case 5 :
+    case 6 :
+    case 7 :
+    case 0 : 
+      float_reduction_step2(0, s);
+      break;
+    case 1 : 
+      float_reduction_step1(0, 1, s);
+      float_reduction_step2(0, s);
+      break;
+    case 2 :
+      float_reduction_step1(0, 1, s);
+      float_reduction_step1(2, 3, s);
+      float_reduction_step1(0, 2, s);
+      float_reduction_step2(0, s);
+      break;
+    case 3 :
+      float_reduction_step1(0, 1, s);
+      float_reduction_step1(2, 3, s);
+      float_reduction_step1(4, 5, s);
+      float_reduction_step1(6, 7, s);
+      float_reduction_step1(0, 2, s);
+      float_reduction_step1(4, 6, s);
+      float_reduction_step1(0, 4, s);
+      float_reduction_step2(0, s);
+      break;
+    default : break;
+  }
+
+  get_vreg(id_src->reg, 0, s1, vtype->vsew, vtype->vlmul, 0, 1);
+  get_tmp_vreg(0, 0, s0, vtype->vsew);
+  rtl_hostcall(s, HOSTCALL_VFP, s1, s0, s1, FPCALL_CMD(FPCALL_ADD, FPCALL_TYPE));
+
+  if(vtype->vta) set_vreg_tail(id_dest->reg);
+  set_vreg(id_dest->reg, 0, *s1, vtype->vsew, vtype->vlmul, 0);
 }
 
 // dirty job here
