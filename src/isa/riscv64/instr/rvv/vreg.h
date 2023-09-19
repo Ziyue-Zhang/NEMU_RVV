@@ -29,6 +29,7 @@
 #define VENUM16 (VLEN/16)
 #define VENUM8  (VLEN/8)
 #define SLEN 256
+#define AGNOSTIC 1
 
 #define RNU 0
 #define RNE 1
