@@ -46,7 +46,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
     if(s->vm != 0 || mask != 0) {
       rtl_lm(s, &tmp_reg[1], &tmp_reg[0], 0, s->v_width, mmu_mode);
       if (is_signed) rtl_sext(s, &tmp_reg[1], &tmp_reg[1], s->v_width);
-      
+
       set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype->vsew, vtype->vlmul, 1);
     }
     
