@@ -47,7 +47,16 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
 
   word_t idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
-  for(idx = vstart->val; idx < vl->val*(s->v_nf+1); idx ++) {
+
+  uint64_t load_vl = vl->val * (s->v_nf+1);
+  if (mode == MODE_UNIT) {
+    switch (s->v_lsumop) {
+      case 0b01000: load_vl = VLEN / (8*s->v_width) * (s->v_nf+1); break;
+      case 0b01011: load_vl = (vl->val + 8*s->v_width - 1) / (8*s->v_width); break;
+    }
+  }
+
+  for(idx = vstart->val; idx < load_vl; idx ++) {
     //TODO: SEW now only supports LE 64bit
     //TODO: need special rtl function, but here ignore it
     if(mode == MODE_INDEXED) {
@@ -63,6 +72,12 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
     if(s->vm != 0 || mask != 0) {
       rtl_lm(s, &tmp_reg[1], &tmp_reg[0], 0, s->v_width, mmu_mode);
       if (is_signed) rtl_sext(s, &tmp_reg[1], &tmp_reg[1], s->v_width);
+      if (mode == MODE_UNIT && s->v_lsumop == 0b01011 && idx == load_vl - 1 && vl->val % (8*s->v_width) != 0) {
+        // last bits of the last element
+        int remain_len = vl->val % (8*s->v_width);
+        uint64_t mask = (1LU << remain_len) - 1;
+        tmp_reg[1] = tmp_reg[1] & mask;
+      }
 
       set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype->vsew, vtype->vlmul, 1);
     } else if (s->vm == 0 && mask==0) {
@@ -120,7 +135,16 @@ void vst(int mode, Decode *s, int mmu_mode) {
 
   word_t idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
-  for(idx = vstart->val; idx < vl->val*(s->v_nf+1); idx ++) {
+
+  uint64_t store_vl = vl->val * (s->v_nf+1);
+  if (mode == MODE_UNIT) {
+    switch (s->v_lsumop) {
+      case 0b01000: store_vl = VLEN / (8*s->v_width) * (s->v_nf+1); break;
+      case 0b01011: store_vl = (vl->val + 8*s->v_width - 1) / (8*s->v_width); break;
+    }
+  }
+
+  for(idx = vstart->val; idx < store_vl; idx ++) {
     //TODO: SEW now only supports LE 64bit
     //TODO: need special rtl function, but here ignore it
     if(mode == MODE_INDEXED) {
@@ -135,6 +159,12 @@ void vst(int mode, Decode *s, int mmu_mode) {
     // op
     if(s->vm != 0 || mask != 0) {
       get_vreg(id_dest->reg, idx, &tmp_reg[1], vtype->vsew, vtype->vlmul, 0, 1);
+      if (mode == MODE_UNIT && s->v_lsumop == 0b01011 && idx == store_vl - 1 && vl->val % (8*s->v_width) != 0) {
+        // last bits of the last element
+        int remain_len = vl->val % (8*s->v_width);
+        uint64_t mask = (1LU << remain_len) - 1;
+        tmp_reg[1] = tmp_reg[1] & mask;
+      }
       rtl_sm(s, &tmp_reg[1], &tmp_reg[0], 0, s->v_width, mmu_mode);
     }
 

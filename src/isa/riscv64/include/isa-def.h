@@ -211,7 +211,7 @@ typedef struct {
       uint32_t pad0      :12;
       uint32_t v_width   : 3;
       uint32_t pad1      : 5;
-      uint32_t v_lumop   : 5;
+      uint32_t v_lsumop  : 5;
       uint32_t pad2      : 1;
       uint32_t v_mop     : 2;
       uint32_t v_mew     : 1;
