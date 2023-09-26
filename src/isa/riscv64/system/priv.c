@@ -85,10 +85,11 @@ static inline word_t* csr_decode(uint32_t addr) {
 }
 
 // WPRI, SXL, UXL cannot be written
-#define MSTATUS_WMASK (0x7e79bbUL) | (1UL << 63)
 #ifdef CONFIG_RVV
+#define MSTATUS_WMASK (0x7e79bbUL) | (1UL << 63) | (3UL << 9)
 #define SSTATUS_WMASK ((1 << 19) | (1 << 18) | (0x3 << 13) | (0x3 << 9) | (1 << 8) | (1 << 5) | (1 << 1))
 #else
+#define MSTATUS_WMASK (0x7e79bbUL) | (1UL << 63)
 #define SSTATUS_WMASK ((1 << 19) | (1 << 18) | (0x3 << 13) | (1 << 8) | (1 << 5) | (1 << 1))
 #endif // CONFIG_RVV
 #define SSTATUS_RMASK (SSTATUS_WMASK | (0x3 << 15) | (1ull << 63) | (3ull << 32))
