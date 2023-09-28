@@ -26,7 +26,16 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
   //        4  ->  32           3  ->  64
   //        8  ->  64
   int index_width = 0;
+  int vtype_vsew = 0;
+  switch(s->v_width) {
+    case 1: vtype_vsew = 0; break;
+    case 2: vtype_vsew = 1; break;
+    case 4: vtype_vsew = 2; break;
+    case 8: vtype_vsew = 3; break;
+    default: break;
+  }
   if(mode == MODE_INDEXED) {
+    vtype_vsew = vtype->vsew;
     switch(s->v_width) {
       case 1: index_width = 0; break;
       case 2: index_width = 1; break;
@@ -79,11 +88,11 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
         tmp_reg[1] = tmp_reg[1] & mask;
       }
 
-      set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype->vsew, vtype->vlmul, 1);
+      set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype_vsew, vtype->vlmul, 1);
     } else if (s->vm == 0 && mask==0) {
         if (AGNOSTIC == 1 && vtype->vma) {
           tmp_reg[1] = (uint64_t) -1;
-          set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype->vsew, vtype->vlmul, 1);
+          set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype_vsew, vtype->vlmul, 1);
         }
     }
     
@@ -98,7 +107,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
     int vlmax = get_vlen_max(vtype->vsew, vtype->vlmul);
     for(idx = vl->val; idx < vlmax; idx++) {
       tmp_reg[1] = (uint64_t) -1;
-      set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype->vsew, vtype->vlmul, 1);
+      set_vreg(id_dest->reg, idx, *&tmp_reg[1], vtype_vsew, vtype->vlmul, 1);
     }
   }
 
@@ -114,7 +123,16 @@ void vst(int mode, Decode *s, int mmu_mode) {
   //        4  ->  32           3  ->  64
   //        8  ->  64
   int index_width = 0;
+  int vtype_vsew = 0;
+  switch(s->v_width) {
+    case 1: vtype_vsew = 0; break;
+    case 2: vtype_vsew = 1; break;
+    case 4: vtype_vsew = 2; break;
+    case 8: vtype_vsew = 3; break;
+    default: break;
+  }
   if(mode == MODE_INDEXED) {
+    vtype_vsew = vtype->vsew;
     switch(s->v_width) {
       case 1: index_width = 0; break;
       case 2: index_width = 1; break;
@@ -158,7 +176,7 @@ void vst(int mode, Decode *s, int mmu_mode) {
 
     // op
     if(s->vm != 0 || mask != 0) {
-      get_vreg(id_dest->reg, idx, &tmp_reg[1], vtype->vsew, vtype->vlmul, 0, 1);
+      get_vreg(id_dest->reg, idx, &tmp_reg[1], vtype_vsew, vtype->vlmul, 0, 1);
       if (mode == MODE_UNIT && s->v_lsumop == 0b01011 && idx == store_vl - 1 && vl->val % (8*s->v_width) != 0) {
         // last bits of the last element
         int remain_len = vl->val % (8*s->v_width);
