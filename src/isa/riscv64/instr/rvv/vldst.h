@@ -32,6 +32,32 @@ def_EHelper(vlduu) { //unit-strided
   //print_asm_template3(vlduu);
 }
 
+def_EHelper(vldm) { //mask
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vle.v);
+    case 1 : print_asm_template3(vlbu.v);
+    case 2 : print_asm_template3(vlhu.v);
+    case 4 : print_asm_template3(vlwu.v);
+  }
+  */
+  VLM(MODE_UNIT, UNSIGNED, s, MMU_DIRECT)
+  //print_asm_template3(vlduu);
+}
+
+def_EHelper(vldr) { //register
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vle.v);
+    case 1 : print_asm_template3(vlbu.v);
+    case 2 : print_asm_template3(vlhu.v);
+    case 4 : print_asm_template3(vlwu.v);
+  }
+  */
+  VLR(MODE_UNIT, UNSIGNED, s, MMU_DIRECT)
+  //print_asm_template3(vlduu);
+}
+
 def_EHelper(vldsu) { //strided unsigned
   /*
   switch (s->v_width) {
@@ -115,6 +141,30 @@ def_EHelper(vstu) {
   //print_asm_template3(vstu);
 }
 
+def_EHelper(vstm) {
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vse.v);
+    case 1 : print_asm_template3(vsb.v);
+    case 2 : print_asm_template3(vsh.v);
+    case 4 : print_asm_template3(vsw.v);
+  }*/
+  VSM(MODE_UNIT, MMU_DIRECT)
+  //print_asm_template3(vstu);
+}
+
+def_EHelper(vstr) {
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vse.v);
+    case 1 : print_asm_template3(vsb.v);
+    case 2 : print_asm_template3(vsh.v);
+    case 4 : print_asm_template3(vsw.v);
+  }*/
+  VSR(MODE_UNIT, MMU_DIRECT)
+  //print_asm_template3(vstu);
+}
+
 def_EHelper(vsts) {
   /*
   switch (s->v_width) {
@@ -167,6 +217,32 @@ def_EHelper(vlduu_mmu) { //unit-strided
   }
   */
   VLD(MODE_UNIT, UNSIGNED, s, MMU_TRANSLATE)
+  //print_asm_template3(vlduu);
+}
+
+def_EHelper(vldm_mmu) { //mask
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vle.v);
+    case 1 : print_asm_template3(vlbu.v);
+    case 2 : print_asm_template3(vlhu.v);
+    case 4 : print_asm_template3(vlwu.v);
+  }
+  */
+  VLM(MODE_UNIT, UNSIGNED, s, MMU_TRANSLATE)
+  //print_asm_template3(vlduu);
+}
+
+def_EHelper(vldr_mmu) { //register
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vle.v);
+    case 1 : print_asm_template3(vlbu.v);
+    case 2 : print_asm_template3(vlhu.v);
+    case 4 : print_asm_template3(vlwu.v);
+  }
+  */
+  VLR(MODE_UNIT, UNSIGNED, s, MMU_TRANSLATE)
   //print_asm_template3(vlduu);
 }
 
@@ -248,6 +324,30 @@ def_EHelper(vstu_mmu) {
     case 4 : print_asm_template3(vsw.v);
   }*/
   VST(MODE_UNIT, MMU_TRANSLATE)
+  //print_asm_template3(vstu);
+}
+
+def_EHelper(vstm_mmu) {
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vse.v);
+    case 1 : print_asm_template3(vsb.v);
+    case 2 : print_asm_template3(vsh.v);
+    case 4 : print_asm_template3(vsw.v);
+  }*/
+  VSM(MODE_UNIT, MMU_TRANSLATE)
+  //print_asm_template3(vstu);
+}
+
+def_EHelper(vstr_mmu) {
+  /*
+  switch (s->v_width) {
+    case 0 : print_asm_template3(vse.v);
+    case 1 : print_asm_template3(vsb.v);
+    case 2 : print_asm_template3(vsh.v);
+    case 4 : print_asm_template3(vsw.v);
+  }*/
+  VSR(MODE_UNIT, MMU_TRANSLATE)
   //print_asm_template3(vstu);
 }
 
