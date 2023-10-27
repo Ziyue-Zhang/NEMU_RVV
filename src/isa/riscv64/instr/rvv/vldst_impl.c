@@ -57,7 +57,7 @@ void vld(int mode, int is_signed, Decode *s, int mmu_mode) {
   word_t idx, nf_idx, vl_idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
 
-  uint64_t load_vl = vl->val * (s->v_nf+1);
+  uint64_t load_vl = vl->val;
 
   int emul = vtype->vlmul << (eew - vtype->vsew);
 
@@ -143,39 +143,38 @@ void vst(int mode, Decode *s, int mmu_mode) {
 
   rtl_lr(s, &(s->src1.val), s->src1.reg, 4);
 
-  word_t idx;
+  word_t idx, nf_idx, vs_idx;
   rtl_mv(s, &(tmp_reg[0]), &(s->src1.val));
 
-  uint64_t store_vl = vl->val * (s->v_nf+1);
-  if (mode == MODE_UNIT) {
-    switch (s->v_lsumop) {
-      case 0b01000: store_vl = VLEN / (8*s->v_width) * (s->v_nf+1); break;
-      case 0b01011: store_vl = (vl->val + 8*s->v_width - 1) / (8*s->v_width); break;
-    }
-  }
+  uint64_t store_vl = vl->val;
 
-  for(idx = vstart->val; idx < store_vl; idx ++) {
-    //TODO: SEW now only supports LE 64bit
-    //TODO: need special rtl function, but here ignore it
-    if(mode == MODE_INDEXED) {
-      rtl_mv(s, &tmp_reg[0], &id_src->val);
-      get_vreg(id_src2->reg, idx, &tmp_reg[3], index_width, vtype->vlmul, 1, 1);
-      rtl_add(s, &tmp_reg[0], &tmp_reg[0], &tmp_reg[3]);
-    }
-    
-    // mask
-    rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
+  int emul = vtype->vlmul << (eew - vtype->vsew);
 
-    // op
-    if(s->vm != 0 || mask != 0) {
-      get_vreg(id_dest->reg, idx, &tmp_reg[1], eew, vtype->vlmul, 0, 1);
-      rtl_sm(s, &tmp_reg[1], &tmp_reg[0], 0, s->v_width, mmu_mode);
-    }
+  for(vs_idx = vstart->val; vs_idx < store_vl; vs_idx ++) {
+    for (nf_idx = 0; nf_idx <= s->v_nf; nf_idx++) {
+      idx = vs_idx + nf_idx * emul;
+      //TODO: SEW now only supports LE 64bit
+      //TODO: need special rtl function, but here ignore it
+      if(mode == MODE_INDEXED) {
+        rtl_mv(s, &tmp_reg[0], &id_src->val);
+        get_vreg(id_src2->reg, idx, &tmp_reg[3], index_width, vtype->vlmul, 1, 1);
+        rtl_add(s, &tmp_reg[0], &tmp_reg[0], &tmp_reg[3]);
+      }
+      
+      // mask
+      rtlreg_t mask = get_mask(0, idx, vtype->vsew, vtype->vlmul);
 
-    switch (mode) {
-      case MODE_UNIT   : rtl_addi(s, &tmp_reg[0], &tmp_reg[0], s->v_width); break;
-      case MODE_STRIDED: rtl_add(s, &tmp_reg[0], &tmp_reg[0], &id_src2->val) ; break;
-      //default : assert(0);
+      // op
+      if(s->vm != 0 || mask != 0) {
+        get_vreg(id_dest->reg, idx, &tmp_reg[1], eew, vtype->vlmul, 0, 1);
+        rtl_sm(s, &tmp_reg[1], &tmp_reg[0], 0, s->v_width, mmu_mode);
+      }
+
+      switch (mode) {
+        case MODE_UNIT   : rtl_addi(s, &tmp_reg[0], &tmp_reg[0], s->v_width); break;
+        case MODE_STRIDED: rtl_add(s, &tmp_reg[0], &tmp_reg[0], &id_src2->val) ; break;
+        //default : assert(0);
+      }
     }
   }
   // TODO: the idx larger than vl need reset to zero.
